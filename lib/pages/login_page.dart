@@ -10,19 +10,25 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 240, 240, 240),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-
-            Logo(),
-
-            _Form(),
-
-            const Labels(),
-
-            const Text('Términos y condiciones de uso', style: TextStyle( fontWeight: FontWeight.w200 ))
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
             
-          ],
+                const Logo(),
+            
+                _Form(),
+            
+                const Labels(),
+            
+                const Text('Términos y condiciones de uso', style: TextStyle( fontWeight: FontWeight.w200 ))
+                
+              ],
+            ),
+          ),
         ),
       )
     );
@@ -64,8 +70,6 @@ class __FormState extends State<_Form> {
           ),
           
 
-
-          //TODO: crear botón
           BotonIngresarRojo(text: 'Ingresar', onPressed: () {
             print(emailCtrl.text);
             print(passCtrl.text);
