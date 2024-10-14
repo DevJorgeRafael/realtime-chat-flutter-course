@@ -22,7 +22,7 @@ class LoginPage extends StatelessWidget {
             
                 _Form(),
             
-                const Labels(),
+                const Labels(ruta: 'register', titulo: 'Crear una cuenta', subtitulo: '¿No tienes cuenta?',),
             
                 const Text('Términos y condiciones de uso', style: TextStyle( fontWeight: FontWeight.w200 ))
                 
