@@ -4,19 +4,27 @@ class ChatMessage extends StatelessWidget {
 
   final String message;
   final String uid;
+  final AnimationController animationController;
 
   const ChatMessage({
     super.key, 
     required this.message, 
-    required this.uid
+    required this.uid,
+    required this.animationController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: this.uid == '123'
-        ? _myMessage()
-        : _notMyMessage(),
+    return FadeTransition(
+      opacity: animationController,
+      child: SizeTransition(
+        sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        child: Container(
+          child: this.uid == '123'
+            ? _myMessage()
+            : _notMyMessage(),
+        ),
+      ),
     );
   }
 
@@ -32,7 +40,7 @@ class ChatMessage extends StatelessWidget {
         ),
         child: Text( message, style: TextStyle(color: Colors.white), ),
         decoration: BoxDecoration(
-          color: Colors.red.shade300,
+          color: Colors.red.shade400,
           borderRadius: BorderRadius.circular(20)
         ),
       ),
