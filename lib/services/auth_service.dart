@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import 'package:realtime_chat/global/environment.dart';
+import 'package:realtime_chat/models/login_response.dart';
+import 'package:realtime_chat/models/usuario.dart';
 
 class AuthService with ChangeNotifier {
 
   // Instancia de Dio
   final Dio _dio = Dio();
-  // Usuario usuario
+  late Usuario usuario;
 
 
   Future login( String email, String password ) async {
@@ -27,14 +29,22 @@ class AuthService with ChangeNotifier {
         )
       );
 
+
+
       print(res.data);
-      print('-----------------------------------');
+      if(res.statusCode == 200) {
+        final loginresponse = loginResponseFromJson( res.toString() );
+        usuario = loginresponse.usuario;
+        print(usuario.nombre);
+      }
+
 
       return res;
 
     } catch (e) {
-      print('Error en login');
+      print('Error en login: ');
       print(e);
+
       return false;
     }
 
