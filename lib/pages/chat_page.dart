@@ -29,12 +29,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         title: Column(
           children: [
             CircleAvatar(
-              child: Text('Te', style: TextStyle(fontSize: 12), ),
+              child: Text('Ju', style: TextStyle(fontSize: 12), ),
               backgroundColor: Colors.red[100],
               maxRadius: 15,
             ),
             SizedBox(height: 3,),
-            Text('Tefo Escobar', style: TextStyle(color: Colors.black87, fontSize: 12),)
+            Text('Juan Guerra', style: TextStyle(color: Colors.black87, fontSize: 12),)
           ],
         ),
         centerTitle: true,
@@ -94,7 +94,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             //* Botón de enviar
             Container(
               margin: EdgeInsets.symmetric( horizontal: 4 ),
-              child: !Platform.isIOS ? 
+              child: Platform.isIOS ? 
               CupertinoButton(
                     child: Text('Enviar',
                         style: TextStyle(
