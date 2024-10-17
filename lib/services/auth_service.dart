@@ -10,9 +10,18 @@ class AuthService with ChangeNotifier {
   // Instancia de Dio
   final Dio _dio = Dio();
   late Usuario usuario;
+  bool _autenticando = false;
+
+  bool get autenticando => _autenticando;
+  set autenticando( bool valor ) {
+    _autenticando = valor;
+    notifyListeners();
+  }
 
 
   Future login( String email, String password ) async {
+
+    autenticando = true;
 
     final data = {
       'email': email,
@@ -30,26 +39,22 @@ class AuthService with ChangeNotifier {
       );
 
 
-
-      print(res.data);
       if(res.statusCode == 200) {
         final loginresponse = loginResponseFromJson( res.toString() );
         usuario = loginresponse.usuario;
-        print(usuario.nombre);
       }
 
-
+      autenticando = false;
+      print('------------------------------' + res.toString());
+      print(autenticando);
       return res;
 
     } catch (e) {
       print('Error en login: ');
       print(e);
-
+      autenticando = false;
       return false;
     }
 
-    
-
   }
-
 }

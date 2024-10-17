@@ -53,6 +53,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -74,13 +76,12 @@ class __FormState extends State<_Form> {
           ),
           
 
-          BotonIngresarRojo(text: 'Ingresar', onPressed: () {
-            print(emailCtrl.text);
-            print(passCtrl.text);
-
-            final authService = Provider.of<AuthService>(context, listen: false);
-            authService.login(emailCtrl.text, passCtrl.text);
-          },),
+          BotonIngresarRojo(
+            text: 'Ingresar', 
+            onPressed: authService.autenticando? null : () {
+              FocusScope.of( context ).unfocus();
+              authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
+          }),
         ],
       ),
     );
