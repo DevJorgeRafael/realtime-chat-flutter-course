@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -61,8 +59,6 @@ class AuthService with ChangeNotifier {
         usuario = loginResponse.usuario;
 
         await _guardarToken(loginResponse.token);
-        print(loginResponse);
-
 
         autenticando = false;
         return true;
@@ -97,7 +93,6 @@ class AuthService with ChangeNotifier {
         )
       );
 
-      print(res);
       if(res.statusCode == 200) {
         final loginResponse = loginResponseFromJson( res.toString() );
         usuario = loginResponse.usuario;
@@ -113,8 +108,6 @@ class AuthService with ChangeNotifier {
     } catch (e) {
       print('Error en registro: ');
       if( e is DioException ) {
-        print(e.response);
-
         if( e.response != null ) {
           final errorResponse = e.response?.data;
           return errorResponse['msg'];
@@ -124,6 +117,43 @@ class AuthService with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> isLoggedIn() async {
+    final token = await _storage.read(key: 'token');
+
+    try {
+      final res = await _dio.get('${Environment.apiUrl}/auth/renew',
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+            'x-token': token
+          }));
+
+      print(res.data);
+
+      if (res.statusCode == 200) {
+        final loginResponse = loginResponseFromJson(res.toString());
+        usuario = loginResponse.usuario;
+        await _guardarToken(loginResponse.token);
+
+        autenticando = false;
+        return true;
+      } else {
+        this.logout();
+        return false;
+      }
+    } catch (e) {
+      print('Error en registro: ');
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorResponse = e.response?.data;
+          return errorResponse['msg'];
+        }
+      }
+      autenticando = false;
+      return false;
+    }
+  } 
+
 
   Future _guardarToken( String token ) async {
     // Write value
