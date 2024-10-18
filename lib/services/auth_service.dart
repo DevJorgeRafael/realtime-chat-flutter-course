@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/login_response.dart';
@@ -12,10 +13,25 @@ class AuthService with ChangeNotifier {
   late Usuario usuario;
   bool _autenticando = false;
 
+  // Create storage
+  final _storage = new FlutterSecureStorage();
+
   bool get autenticando => _autenticando;
   set autenticando( bool valor ) {
     _autenticando = valor;
     notifyListeners();
+  }
+
+  //Getters del token de forma estática
+  static Future<String> getToken() async {
+    final _storage = new FlutterSecureStorage();
+    final token = await _storage.read(key: 'token');
+    return token ?? '';
+  }
+
+  static Future<void> deleteToken() async {
+    final _storage = new FlutterSecureStorage();
+    final token = await _storage.delete(key: 'token');
   }
 
 
@@ -39,10 +55,13 @@ class AuthService with ChangeNotifier {
       );
 
       if(res.statusCode == 200) {
-        final loginresponse = loginResponseFromJson( res.toString() );
-        usuario = loginresponse.usuario;
+        final loginResponse = loginResponseFromJson( res.toString() );
+        usuario = loginResponse.usuario;
 
-        // TODO: guardar token en lugar seguro
+        await _guardarToken(loginResponse.token);
+        print(loginResponse);
+
+
         autenticando = false;
         return true;
       } else {
@@ -56,4 +75,14 @@ class AuthService with ChangeNotifier {
       return false;
     }
   }
+
+  Future _guardarToken( String token ) async {
+    // Write value
+    return await _storage.write(key: 'token', value: token);
+  }
+
+  Future logout() async {
+    await _storage.delete(key: 'token');
+  }
+
 }
