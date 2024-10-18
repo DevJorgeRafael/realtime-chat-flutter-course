@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import 'package:realtime_chat/services/auth_service.dart';
 
+import 'package:realtime_chat/helpers/mostrar_alerta.dart';
+
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class LoginPage extends StatelessWidget {
@@ -78,9 +80,19 @@ class __FormState extends State<_Form> {
 
           BotonIngresarRojo(
             text: 'Ingresar', 
-            onPressed: authService.autenticando? null : () {
+            onPressed: authService.autenticando? null : () async {
+
               FocusScope.of( context ).unfocus();
-              authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
+
+              final bool loginOk = await authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
+
+              if( loginOk ) {
+                //TODO: Navegar a otra pantalla
+              } else {
+                //TODO: Mostrar error de autenticación
+                mostrarAlerta(context, 'Inicio de sesión incorrecto', 'Revise sus credenciales');
+              }
+
           }),
         ],
       ),

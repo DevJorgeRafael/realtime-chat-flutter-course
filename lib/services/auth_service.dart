@@ -38,16 +38,16 @@ class AuthService with ChangeNotifier {
         )
       );
 
-
       if(res.statusCode == 200) {
         final loginresponse = loginResponseFromJson( res.toString() );
         usuario = loginresponse.usuario;
-      }
 
-      autenticando = false;
-      print('------------------------------' + res.toString());
-      print(autenticando);
-      return res;
+        // TODO: guardar token en lugar seguro
+        autenticando = false;
+        return true;
+      } else {
+        return false;
+      }
 
     } catch (e) {
       print('Error en login: ');
@@ -55,6 +55,5 @@ class AuthService with ChangeNotifier {
       autenticando = false;
       return false;
     }
-
   }
 }
