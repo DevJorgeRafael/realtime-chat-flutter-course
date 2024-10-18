@@ -121,14 +121,17 @@ class AuthService with ChangeNotifier {
   Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: 'token');
 
+    print(token);
+    if( token == null ) {
+      return false;
+    }
+
     try {
       final res = await _dio.get('${Environment.apiUrl}/auth/renew',
           options: Options(headers: {
             'Content-Type': 'application/json',
             'x-token': token
           }));
-
-      print(res.data);
 
       if (res.statusCode == 200) {
         final loginResponse = loginResponseFromJson(res.toString());
@@ -142,7 +145,7 @@ class AuthService with ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error en registro: ');
+      print('Error en isLoggedIn: ');
       if (e is DioException) {
         if (e.response != null) {
           final errorResponse = e.response?.data;

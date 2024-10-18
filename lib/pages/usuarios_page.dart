@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:realtime_chat/models/usuario.dart';
+import 'package:realtime_chat/services/auth_service.dart';
 
 
 class UsuariosPage extends StatefulWidget {
@@ -23,20 +25,27 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mi Nombre'),
+        title: Text( usuario.nombre ),
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon( Icons.exit_to_app_outlined ),
+          icon: const Icon( Icons.exit_to_app_outlined ),
           onPressed: () {
-            
+            //TODO: Desconectar el socket server
+
+            Navigator.pushReplacementNamed(context, 'login');
+            AuthService.deleteToken();
           },
         ),
         actions: [
           Container(
-            margin: EdgeInsets.only( right: 10),
+            margin: const EdgeInsets.only( right: 10),
             child: Icon( Icons.circle, color: Colors.green[500], ),
             // child: Icon( Icons.circle, color: Colors.red[500], ),
           )
@@ -59,7 +68,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       itemBuilder: ( _ , i ) => _usuarioListTile(usuarios[i]) , 
-      separatorBuilder: ( _ , i ) => Divider(),
+      separatorBuilder: ( _ , i ) => const Divider(),
       itemCount: usuarios.length
     );
   }
@@ -84,7 +93,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   _cargarUsuarios () async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();
   }
 }
