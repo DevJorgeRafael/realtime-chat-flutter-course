@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -35,7 +37,7 @@ class AuthService with ChangeNotifier {
   }
 
 
-  Future login( String email, String password ) async {
+  Future<bool> login( String email, String password ) async {
 
     autenticando = true;
 
@@ -71,6 +73,53 @@ class AuthService with ChangeNotifier {
     } catch (e) {
       print('Error en login: ');
       print(e);
+      autenticando = false;
+      return false;
+    }
+  }
+
+  Future register(String nombre,  String email, String password ) async {
+    autenticando = true;
+
+    final data = {
+      'nombre': nombre,
+      'email': email,
+      'password': password
+    };
+  
+    try {
+      final res = await _dio.post('${ Environment.apiUrl }/auth/register',
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        )
+      );
+
+      print(res);
+      if(res.statusCode == 200) {
+        final loginResponse = loginResponseFromJson( res.toString() );
+        usuario = loginResponse.usuario;
+
+        await _guardarToken(loginResponse.token);
+        autenticando = false;
+        return true;
+        
+      } else {
+        return false;
+      }
+      
+    } catch (e) {
+      print('Error en registro: ');
+      if( e is DioException ) {
+        print(e.response);
+
+        if( e.response != null ) {
+          final errorResponse = e.response?.data;
+          return errorResponse['msg'];
+        }
+      }
       autenticando = false;
       return false;
     }

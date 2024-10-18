@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat/helpers/mostrar_alerta.dart';
+
+import 'package:realtime_chat/services/auth_service.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -43,6 +47,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -52,7 +58,7 @@ class __FormState extends State<_Form> {
             icon: Icons.perm_identity,
             placeholder: 'Nombre',
             keyboardType: TextInputType.emailAddress,
-            textController: passCtrl,
+            textController: nameCtrl,
           ),
           CustomInput(
             icon: Icons.mail_outline,
@@ -68,9 +74,14 @@ class __FormState extends State<_Form> {
           ),
           BotonIngresarRojo(
             text: 'Registrarse',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passCtrl.text);
+            onPressed: authService.autenticando ? null : () async {
+              final registerOk = await authService.register(nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim());
+
+              if ( registerOk == true ) {
+                Navigator.pushReplacementNamed(context, 'usuarios');
+              } else {
+                mostrarAlerta(context, 'Error en el registro', registerOk);
+              }
             },
           ),
         ],
