@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realtime_chat/services/services.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
+import 'package:realtime_chat/models/mensajes_response.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -27,11 +28,32 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     chatService = Provider.of<ChatService>(context, listen: false);
     socketService = Provider.of<SocketService>(context, listen: false);
     authService = Provider.of<AuthService>(context, listen: false);
 
     socketService.socket.on('mensaje-personal', _escucharMensaje);
+
+    _cargarHistorial( chatService.usuarioPara.uid );
+  }
+
+  void _cargarHistorial( String usuarioID ) async {
+
+    List<Message> chat = await chatService.getChat(usuarioID);
+
+    final history = chat.map((m) => ChatMessage(
+      message: m.message,
+      uid: m.from,
+      animationController: AnimationController(vsync: this, duration: const Duration(milliseconds: 300))..forward(),
+    ));
+
+    setState(() {
+      _messages.insertAll(0, history);
+    });
+
+
+
   }
 
   void _escucharMensaje( dynamic payload ) {
@@ -112,7 +134,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 onSubmitted: _handleSubmit,
                 onChanged: (String texto) {
                   setState(() {
-                    _estaEscribiendo = texto.trim().length > 0;
+                    _estaEscribiendo = texto.trim().isNotEmpty;
                   });
                 },
                 decoration: const InputDecoration.collapsed(
@@ -127,14 +149,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               margin: const EdgeInsets.symmetric( horizontal: 4 ),
               child: Platform.isIOS ? 
               CupertinoButton(
-                    child: Text('Enviar',
-                        style: TextStyle(
-                            color: _estaEscribiendo
-                                ? Colors.red[400]
-                                : CupertinoColors.inactiveGray)),
                     onPressed: _estaEscribiendo
                         ? () => _handleSubmit(_textController.text.trim())
                         : null,
+                    child: Text('Enviar',
+                        style: TextStyle( color: _estaEscribiendo ? Colors.red[400] : CupertinoColors.inactiveGray)),
                   )
               : Container(
                 margin: const EdgeInsets.symmetric( horizontal: 4 ),
@@ -162,14 +181,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   _handleSubmit(String texto) {
 
-    if (texto.length == 0) return;
+    if (texto.isEmpty) return;
 
     _textController.clear();
     _focusNode.requestFocus();
 
     final newMessage = ChatMessage(
       message: texto, 
-      uid: '123', 
+      uid: authService.usuario.uid, 
       animationController: AnimationController(vsync: this, duration: const Duration(milliseconds: 200)),  
     );
     _messages.insert(0, newMessage);
