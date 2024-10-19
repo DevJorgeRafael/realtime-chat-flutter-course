@@ -31,7 +31,7 @@ class AuthService with ChangeNotifier {
 
   static Future<void> deleteToken() async {
     final _storage = new FlutterSecureStorage();
-    final token = await _storage.delete(key: 'token');
+    await _storage.delete(key: 'token');
   }
 
 
