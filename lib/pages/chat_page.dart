@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
+import 'package:realtime_chat/services/services.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class ChatPage extends StatefulWidget {
@@ -22,6 +25,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
+    final chatService = Provider.of<ChatService>(context);
+    final usuarioPara = chatService.usuarioPara;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -29,12 +36,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         title: Column(
           children: [
             CircleAvatar(
-              child: Text('Ju', style: TextStyle(fontSize: 12), ),
               backgroundColor: Colors.red[100],
               maxRadius: 15,
+              child: Text(usuarioPara.nombre.substring(0, 2), style: const TextStyle(fontSize: 12), ),
             ),
-            SizedBox(height: 3,),
-            Text('Juan Guerra', style: TextStyle(color: Colors.black87, fontSize: 12),)
+            const SizedBox(height: 3,),
+            Text( usuarioPara.nombre, style: const TextStyle(color: Colors.black87, fontSize: 12),)
           ],
         ),
         centerTitle: true,
@@ -54,7 +61,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               ),
             ), 
 
-            Divider( height: 1, ), 
+            const Divider( height: 1, ), 
 
             //TODO: Caja de texto
             Container(
@@ -71,7 +78,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     return SafeArea(
       child: Container(
-        margin: EdgeInsets.symmetric( horizontal: 8 ),
+        margin: const EdgeInsets.symmetric( horizontal: 8 ),
         child: Row(
           children: [
 
@@ -84,7 +91,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     _estaEscribiendo = texto.trim().length > 0;
                   });
                 },
-                decoration: InputDecoration.collapsed(
+                decoration: const InputDecoration.collapsed(
                   hintText: 'Enviar mensaje'
                 ),
                 focusNode: _focusNode,
@@ -93,7 +100,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
             //* Botón de enviar
             Container(
-              margin: EdgeInsets.symmetric( horizontal: 4 ),
+              margin: const EdgeInsets.symmetric( horizontal: 4 ),
               child: Platform.isIOS ? 
               CupertinoButton(
                     child: Text('Enviar',
@@ -139,7 +146,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     final newMessage = ChatMessage(
       message: texto, 
       uid: '123', 
-      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 200)),  
+      animationController: AnimationController(vsync: this, duration: const Duration(milliseconds: 200)),  
     );
     _messages.insert(0, newMessage);
     newMessage.animationController.forward();

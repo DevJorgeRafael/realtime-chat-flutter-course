@@ -20,12 +20,6 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   List<Usuario> usuarios = [];
 
-  // final usuarios = [
-  //   Usuario(uid: '1', nombre: 'María', email: 'test1@test.com', online: true),
-  //   Usuario(uid: '2', nombre: 'Melissa', email: 'test2@test.com', online: false),
-  //   Usuario(uid: '3', nombre: 'Fernando', email: 'test3@test.com', online: true),
-  // ];
-
   @override
   void initState() {
     _cargarUsuarios();
@@ -100,6 +94,11 @@ class _UsuariosPageState extends State<UsuariosPage> {
             color: usuario.online? Colors.green[400] : Colors.red[400],
           ),
         ),
+        onTap: () {
+          final chatService = Provider.of<ChatService>(context, listen: false);
+          chatService.usuarioPara = usuario;
+          Navigator.pushNamed(context, 'chat');
+        },
       );
   }
 
