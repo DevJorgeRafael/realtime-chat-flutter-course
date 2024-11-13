@@ -39,10 +39,6 @@ class AuthService with ChangeNotifier {
 
     autenticando = true;
 
-    print('${Environment.apiUrl}/auth/login');
-
-
-
     final data = {
       'email': email,
       'password': password
@@ -59,8 +55,6 @@ class AuthService with ChangeNotifier {
         )
       );
 
-      print(res);
-
       if(res.statusCode == 200) {
         final loginResponse = loginResponseFromJson( res.toString() );
         usuario = loginResponse.usuario;
@@ -75,10 +69,6 @@ class AuthService with ChangeNotifier {
 
     } catch (e) {
       print('Error en login: $e');
-      if (e is DioError) {
-        print('DioError: ${e.response?.statusCode}');
-        print('DioError Data: ${e.response?.data}');
-      }
       autenticando = false;
       return false;
     }
