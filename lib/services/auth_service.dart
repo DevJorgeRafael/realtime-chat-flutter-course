@@ -39,13 +39,18 @@ class AuthService with ChangeNotifier {
 
     autenticando = true;
 
+    print('${Environment.apiUrl}/auth/login');
+
+
+
     final data = {
       'email': email,
       'password': password
     };
 
     try {
-      final res = await _dio.post('${ Environment.apiUrl }/auth/login',
+      final res = await _dio.post(
+        '${ Environment.apiUrl }/auth/login',
         data: data,
         options: Options(
           headers: {
@@ -53,6 +58,8 @@ class AuthService with ChangeNotifier {
           }
         )
       );
+
+      print(res);
 
       if(res.statusCode == 200) {
         final loginResponse = loginResponseFromJson( res.toString() );
@@ -67,8 +74,11 @@ class AuthService with ChangeNotifier {
       }
 
     } catch (e) {
-      print('Error en login: ');
-      print(e);
+      print('Error en login: $e');
+      if (e is DioError) {
+        print('DioError: ${e.response?.statusCode}');
+        print('DioError Data: ${e.response?.data}');
+      }
       autenticando = false;
       return false;
     }
@@ -148,7 +158,7 @@ class AuthService with ChangeNotifier {
       if (e is DioException) {
         if (e.response != null) {
           final errorResponse = e.response?.data;
-          return errorResponse['msg'];
+          print( errorResponse['msg'] );
         }
       }
       autenticando = false;
