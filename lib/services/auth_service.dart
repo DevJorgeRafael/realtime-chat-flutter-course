@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat/services/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/login_response.dart';
@@ -60,6 +65,7 @@ class AuthService with ChangeNotifier {
         usuario = loginResponse.usuario;
 
         await _guardarToken(loginResponse.token);
+        await _guardarUsuario(loginResponse.usuario);
 
         autenticando = false;
         return true;
@@ -118,9 +124,17 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: 'token');
+  Future<bool> isLoggedIn(BuildContext context) async {
+    final usuarioService = Provider.of<GlobalUsuarioService>(context, listen: false);
+    
+    final usuarioLocal = usuarioService.usuario;
+    if( usuarioLocal != null ) {
+      usuario = usuarioLocal;
+      notifyListeners();
+      return true;
+    }
 
+    final token = await _storage.read(key: 'token');
     if( token == null ) {
       return false;
     }
@@ -136,6 +150,7 @@ class AuthService with ChangeNotifier {
         final loginResponse = loginResponseFromJson(res.toString());
         usuario = loginResponse.usuario;
         await _guardarToken(loginResponse.token);
+        await _guardarUsuario(loginResponse.usuario);
 
         autenticando = false;
         return true;
@@ -156,6 +171,20 @@ class AuthService with ChangeNotifier {
     }
   } 
 
+  Future<void> _guardarUsuario(Usuario usuario) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = jsonEncode(usuario.toJson());
+    await prefs.setString('usuario', userData);
+  }
+
+  Future<Usuario?> cargarUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = prefs.getString('usuario');
+    if( userData != null ) {
+      return Usuario.fromJson(jsonDecode(userData));
+    }
+    return null;
+  }
 
   Future _guardarToken( String token ) async {
     // Write value

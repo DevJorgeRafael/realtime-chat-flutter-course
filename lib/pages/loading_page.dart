@@ -27,26 +27,39 @@ class LoadingPage extends StatelessWidget {
   Future checkLoginState( BuildContext context ) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final socketService = Provider.of<SocketService>(context, listen: false);
+    final globalUsuarioService = Provider.of<GlobalUsuarioService>(context, listen: false);
 
-    final bool autenticado = await authService.isLoggedIn();
+    await globalUsuarioService.cargarUsuario();
 
-    if( autenticado ) {
+    if( globalUsuarioService.usuario !=null ) {
+      authService.usuario = globalUsuarioService.usuario!;
       socketService.connect();
-      Navigator.pushReplacement(
-        context, 
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(context, 
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const UsuariosPage(),
           transitionDuration: const Duration(milliseconds: 0)
         )
       );
     } else {
-      Navigator.pushReplacement(
-        context, 
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const LoginPage(),
-          transitionDuration: const Duration(milliseconds: 0)
-        )
-      );
+      final bool autenticado = await authService.isLoggedIn(context);
+
+      if (autenticado) {
+        socketService.connect();
+        Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            PageRouteBuilder(
+                pageBuilder: (_, __, ___) => const UsuariosPage(),
+                transitionDuration: const Duration(milliseconds: 0)));
+      } else {
+        Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            PageRouteBuilder(
+                pageBuilder: (_, __, ___) => const LoginPage(),
+                transitionDuration: const Duration(milliseconds: 0)));
+      }
     }
   }
 }
