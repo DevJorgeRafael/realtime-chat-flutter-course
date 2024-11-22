@@ -105,7 +105,9 @@ class _UsuariosPageState extends State<UsuariosPage> {
   _cargarUsuarios () async {
 
     usuarios = await usuarioService.getUsuarios();
-    setState(() => {});
+    if ( mounted ) {
+      setState(() => {});
+    }
 
     // await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();

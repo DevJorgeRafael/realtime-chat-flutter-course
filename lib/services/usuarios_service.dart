@@ -9,7 +9,7 @@ import 'package:realtime_chat/services/auth_service.dart';
 
 class UsuariosService with ChangeNotifier{
 
-  Future getUsuarios () async {
+  Future<List<Usuario>> getUsuarios () async {
 
     try {
       final response = await dio.Dio().get('${ Environment.apiUrl }/usuarios', 

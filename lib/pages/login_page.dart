@@ -86,14 +86,13 @@ class __FormState extends State<_Form> {
 
               FocusScope.of( context ).unfocus();
 
-              final bool loginOk = await authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
+              final loginRestult = await authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
 
-              if( loginOk ) {
+              if( loginRestult['ok'] == 'true' ) {
                 socketService.connect();
                 Navigator.pushReplacementNamed(context, 'usuarios');
               } else {
-                //TODO: Mostrar error de autenticación
-                mostrarAlerta(context, 'Inicio de sesión incorrecto', 'Revise sus credenciales');
+                mostrarAlerta(context, 'Error de autenticación', loginRestult['msg']);
               }
 
           }),

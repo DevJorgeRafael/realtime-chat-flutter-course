@@ -40,7 +40,7 @@ class AuthService with ChangeNotifier {
   }
 
 
-  Future<bool> login( String email, String password ) async {
+  Future<Map<String, dynamic>> login( String email, String password ) async {
 
     autenticando = true;
 
@@ -68,15 +68,25 @@ class AuthService with ChangeNotifier {
         await _guardarUsuario(loginResponse.usuario);
 
         autenticando = false;
-        return true;
+        return {'ok': 'true'};
       } else {
-        return false;
+        return {'ok': 'false', 'msg': 'Credenciales incorrectas'};
       }
 
     } catch (e) {
       print('Error en login: $e');
       autenticando = false;
-      return false;
+
+      if (e is DioException) {
+        final response = e.response;
+        if (response != null && response.data != null ) {
+          return {
+            'ok': 'false',
+            'msg': response.data['msg'] ?? 'Error desconocido'
+          };
+        }
+      }
+      return {'ok': 'false', 'msg': 'Error en el servidor'};
     }
   }
 
@@ -193,6 +203,8 @@ class AuthService with ChangeNotifier {
 
   Future logout() async {
     await _storage.delete(key: 'token');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('usuario');
   }
 
 }
