@@ -11,6 +11,8 @@ class UsuariosService with ChangeNotifier{
 
   Future<List<Usuario>> getUsuarios () async {
 
+    // print("obteniendo el token: -------------------: ${ await AuthService.getToken()} ");
+
     try {
       final response = await dio.Dio().get('${ Environment.apiUrl }/usuarios', 
         options: dio.Options(

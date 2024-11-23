@@ -30,35 +30,34 @@ class LoadingPage extends StatelessWidget {
     final globalUsuarioService = Provider.of<GlobalUsuarioService>(context, listen: false);
 
     await globalUsuarioService.cargarUsuario();
+    final token = await AuthService.getToken();
 
-    if( globalUsuarioService.usuario !=null ) {
+    if( globalUsuarioService.usuario != null && token.isNotEmpty ) {
       authService.usuario = globalUsuarioService.usuario!;
       socketService.connect();
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(context, 
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const UsuariosPage(),
-          transitionDuration: const Duration(milliseconds: 0)
+          transitionDuration: const Duration(milliseconds: 1000)
         )
       );
     } else {
       final bool autenticado = await authService.isLoggedIn(context);
 
+      if (!context.mounted ) return;
       if (autenticado) {
-        socketService.connect();
         Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             PageRouteBuilder(
                 pageBuilder: (_, __, ___) => const UsuariosPage(),
-                transitionDuration: const Duration(milliseconds: 0)));
+                transitionDuration: const Duration(milliseconds: 1000)));
       } else {
         Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             PageRouteBuilder(
                 pageBuilder: (_, __, ___) => const LoginPage(),
-                transitionDuration: const Duration(milliseconds: 0)));
+                transitionDuration: const Duration(milliseconds: 1000)));
       }
     }
   }

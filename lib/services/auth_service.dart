@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:realtime_chat/services/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/global/environment.dart';
@@ -19,7 +17,7 @@ class AuthService with ChangeNotifier {
   bool _autenticando = false;
 
   // Create storage
-  final _storage = new FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   bool get autenticando => _autenticando;
   set autenticando( bool valor ) {
@@ -135,48 +133,22 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> isLoggedIn(BuildContext context) async {
-    final usuarioService = Provider.of<GlobalUsuarioService>(context, listen: false);
-    
-    final usuarioLocal = usuarioService.usuario;
-    if( usuarioLocal != null ) {
-      usuario = usuarioLocal;
-      notifyListeners();
-      return true;
-    }
 
     final token = await _storage.read(key: 'token');
-    if( token == null ) {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = prefs.getString('usuario');
+
+    if( token == null || userData == null ) {
+      logout();
       return false;
     }
 
     try {
-      final res = await _dio.get('${Environment.apiUrl}/auth/renew',
-          options: Options(headers: {
-            'Content-Type': 'application/json',
-            'x-token': token
-          }));
-
-      if (res.statusCode == 200) {
-        final loginResponse = loginResponseFromJson(res.toString());
-        usuario = loginResponse.usuario;
-        await _guardarToken(loginResponse.token);
-        await _guardarUsuario(loginResponse.usuario);
-
-        autenticando = false;
-        return true;
-      } else {
-        this.logout();
-        return false;
-      }
+      usuario = Usuario.fromJson(jsonDecode(userData));
+      print("usuario cargado desde local. ------ $usuario");
+      return true;
     } catch (e) {
-      print('Error en isLoggedIn: ');
-      if (e is DioException) {
-        if (e.response != null) {
-          final errorResponse = e.response?.data;
-          print( errorResponse['msg'] );
-        }
-      }
-      autenticando = false;
+      await logout();
       return false;
     }
   } 
@@ -201,8 +173,8 @@ class AuthService with ChangeNotifier {
     return await _storage.write(key: 'token', value: token);
   }
 
-  Future logout() async {
-    await _storage.delete(key: 'token');
+  static Future logout() async {
+    await deleteToken();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('usuario');
   }

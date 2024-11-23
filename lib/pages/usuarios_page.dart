@@ -42,9 +42,8 @@ class _UsuariosPageState extends State<UsuariosPage> {
           icon: const Icon( Icons.exit_to_app_outlined ),
           onPressed: () {
             socketService.disconnect();
-
             Navigator.pushReplacementNamed(context, 'login');
-            AuthService.deleteToken();
+            AuthService.logout();
           },
         ),
         actions: [
