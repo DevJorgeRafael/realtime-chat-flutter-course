@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:realtime_chat/models/usuario.dart';
+import 'package:realtime_chat/pages/chat_page.dart';
 import 'package:realtime_chat/services/services.dart';
 
 
@@ -16,7 +18,7 @@ class UsuariosPage extends StatefulWidget {
 class _UsuariosPageState extends State<UsuariosPage> {
 
   final usuarioService = UsuariosService();
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<Usuario> usuarios = [];
 
@@ -79,24 +81,54 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   ListTile _usuarioListTile(Usuario usuario) {
     return ListTile(
-        title: Text( usuario.nombre ),
+        title: Text( usuario.nombre, style: const TextStyle(fontWeight: FontWeight.bold) ),
         subtitle: Text( usuario.email ),
-        leading: CircleAvatar(
-          backgroundColor: Colors.red[100],
-          child: Text(usuario.nombre.substring(0,2)),
-        ),
-        trailing: Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: usuario.online? Colors.green[400] : Colors.red[400],
-          ),
+        leading: Stack(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.red[100],
+              child: const Icon( Icons.person_sharp )
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: usuario.online? Colors.green[400] : Colors.red[400],
+                  border: Border.all(width: 1.5, color: Colors.white)
+                ),
+              )
+            )
+          ]
         ),
         onTap: () {
           final chatService = Provider.of<ChatService>(context, listen: false);
           chatService.usuarioPara = usuario;
-          Navigator.pushNamed(context, 'chat');
+          Navigator.push(
+            context, 
+            PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) {
+              // Definir la página a la que quieres navegar
+              return ChatPage(); 
+            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = const Offset(1.0, 0.0); 
+
+              var end = Offset.zero;
+              var curve = Curves.easeInOut;
+
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 300),
+          ),
+          );
         },
       );
   }
