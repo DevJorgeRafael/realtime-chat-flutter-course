@@ -51,9 +51,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {
       _messages.insertAll(0, history);
     });
-
-
-
   }
 
   void _escucharMensaje( dynamic payload ) {
@@ -109,7 +106,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
             const Divider( height: 1, ), 
 
-            //TODO: Caja de texto
             Container(
               color: Colors.white,
               child: _inputChat(),
