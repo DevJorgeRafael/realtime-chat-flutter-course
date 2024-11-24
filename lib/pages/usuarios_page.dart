@@ -65,12 +65,12 @@ class _UsuariosPageState extends State<UsuariosPage> {
           complete: Icon( Icons.check, color: Colors.blue[400] ),
           waterDropColor: Colors.blue.shade400,
         ),
-        child: _listViewSuarios(),
+        child: _listViewUsuarios(),
       )
    );
   }
 
-  ListView _listViewSuarios() {
+  ListView _listViewUsuarios() {
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       itemBuilder: ( _ , i ) => _usuarioListTile(usuarios[i]) , 
