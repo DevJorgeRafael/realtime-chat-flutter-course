@@ -94,7 +94,6 @@ class __FormState extends State<_Form> {
               } else {
                 mostrarAlerta(context, 'Error de autenticación', loginRestult['msg']);
               }
-
           }),
         ],
       ),

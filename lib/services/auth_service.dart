@@ -77,6 +77,13 @@ class AuthService with ChangeNotifier {
 
       if (e is DioException) {
         final response = e.response;
+        if ( response!.statusCode == 503 ) {
+          return {
+            'ok': 'false',
+            'msg': 'Servidor no disponible'
+          };
+        }
+        
         if (response != null && response.data != null ) {
           return {
             'ok': 'false',
@@ -145,7 +152,6 @@ class AuthService with ChangeNotifier {
 
     try {
       usuario = Usuario.fromJson(jsonDecode(userData));
-      print("usuario cargado desde local. ------ $usuario");
       return true;
     } catch (e) {
       await logout();
