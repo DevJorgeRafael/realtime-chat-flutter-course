@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:realtime_chat/services/services.dart';
 
 import 'package:realtime_chat/pages/login_page.dart';
-import 'package:realtime_chat/pages/usuarios_page.dart';
+import 'package:realtime_chat/pages/users_page.dart';
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({super.key});
@@ -33,12 +33,12 @@ class LoadingPage extends StatelessWidget {
     final token = await AuthService.getToken();
 
     if( globalUsuarioService.usuario != null && token.isNotEmpty ) {
-      authService.usuario = globalUsuarioService.usuario!;
+      authService.user = globalUsuarioService.usuario!;
       socketService.connect();
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(context, 
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const UsuariosPage(),
+          pageBuilder: (_, __, ___) => const UsersPage(),
           transitionDuration: const Duration(milliseconds: 1000)
         )
       );
@@ -50,7 +50,7 @@ class LoadingPage extends StatelessWidget {
         Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-                pageBuilder: (_, __, ___) => const UsuariosPage(),
+                pageBuilder: (_, __, ___) => const UsersPage(),
                 transitionDuration: const Duration(milliseconds: 1000)));
       } else {
         Navigator.pushReplacement(

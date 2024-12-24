@@ -2,19 +2,16 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 
 import 'package:realtime_chat/global/environment.dart';
-import 'package:realtime_chat/models/usuario.dart';
-import 'package:realtime_chat/models/usuarios_response.dart';
+import 'package:realtime_chat/models/user.dart';
+import 'package:realtime_chat/models/users_response.dart';
 
 import 'package:realtime_chat/services/auth_service.dart';
 
 class UsuariosService with ChangeNotifier{
 
-  Future<List<Usuario>> getUsuarios () async {
-
-    // print("obteniendo el token: -------------------: ${ await AuthService.getToken()} ");
-
+  Future<List<User>> getUsuarios () async {
     try {
-      final response = await dio.Dio().get('${ Environment.apiUrl }/usuarios', 
+      final response = await dio.Dio().get('${ Environment.apiUrl }/users', 
         options: dio.Options(
           headers: {
             'Content-type': 'application/json',
@@ -23,8 +20,8 @@ class UsuariosService with ChangeNotifier{
         )
       );
 
-      final usuariosResponse = usuariosResponseFromJson( response.toString() );
-      return usuariosResponse.usuarios;
+      final usuarios = usersResponseFromjson( response.data );
+      return usuarios;
     } catch (e) {
       print('Error al obtener usuarios: \n $e');
       return [];

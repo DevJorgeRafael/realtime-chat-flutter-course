@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/mensajes_response.dart';
 
-import 'package:realtime_chat/models/usuario.dart';
+import 'package:realtime_chat/models/user.dart';
 import 'package:realtime_chat/services/services.dart';
 
 class ChatService with ChangeNotifier {
 
-  late Usuario usuarioPara; 
+  late User usuarioPara; 
 
   Future<List<Message>> getChat( String usuarioID ) async {
     try {

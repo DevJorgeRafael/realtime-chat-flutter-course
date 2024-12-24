@@ -92,7 +92,7 @@ class __FormState extends State<_Form> {
                 socketService.connect();
                 Navigator.pushReplacementNamed(context, 'usuarios');
               } else {
-                mostrarAlerta(context, 'Error de autenticación', loginRestult['msg']);
+                mostrarAlerta(context, 'Error de autenticación', loginRestult['message']);
               }
           }),
         ],

@@ -7,13 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/login_response.dart';
-import 'package:realtime_chat/models/usuario.dart';
+import 'package:realtime_chat/models/user.dart';
 
 class AuthService with ChangeNotifier {
 
   // Instancia de Dio
   final Dio _dio = Dio();
-  late Usuario usuario;
+  late User user;
   bool _autenticando = false;
 
   // Create storage
@@ -39,7 +39,6 @@ class AuthService with ChangeNotifier {
 
 
   Future<Map<String, dynamic>> login( String email, String password ) async {
-
     autenticando = true;
 
     final data = {
@@ -58,17 +57,19 @@ class AuthService with ChangeNotifier {
         )
       );
 
+      print('Código de estadoooooo: ${res.statusCode}');
       if(res.statusCode == 200) {
         final loginResponse = loginResponseFromJson( res.toString() );
-        usuario = loginResponse.usuario;
+        user = loginResponse.user;
 
         await _guardarToken(loginResponse.token);
-        await _guardarUsuario(loginResponse.usuario);
+        await _guardarUsuario(loginResponse.user);
 
         autenticando = false;
         return {'ok': 'true'};
       } else {
-        return {'ok': 'false', 'msg': 'Credenciales incorrectas'};
+        autenticando = false;
+        return {'ok': 'false', 'message': 'Error desconocido'};
       }
 
     } catch (e) {
@@ -77,21 +78,23 @@ class AuthService with ChangeNotifier {
 
       if (e is DioException) {
         final response = e.response;
-        if ( response!.statusCode == 503 ) {
+
+        if (response != null ) {
           return {
             'ok': 'false',
-            'msg': 'Servidor no disponible'
+            'message': response.data['message'] ?? 'Error desconocido'
+          };
+        }
+
+        if ( response?.statusCode == 503 ) {
+          return {
+            'ok': 'false',
+            'message': 'Servidor no disponible'
           };
         }
         
-        if (response != null && response.data != null ) {
-          return {
-            'ok': 'false',
-            'msg': response.data['msg'] ?? 'Error desconocido'
-          };
-        }
       }
-      return {'ok': 'false', 'msg': 'Error en el servidor'};
+      return {'ok': 'false', 'message': 'Error en el servidor'};
     }
   }
 
@@ -116,7 +119,7 @@ class AuthService with ChangeNotifier {
 
       if(res.statusCode == 200) {
         final loginResponse = loginResponseFromJson( res.toString() );
-        usuario = loginResponse.usuario;
+        user = loginResponse.user;
 
         await _guardarToken(loginResponse.token);
         autenticando = false;
@@ -152,7 +155,7 @@ class AuthService with ChangeNotifier {
     }
 
     try {
-      usuario = Usuario.fromJson(jsonDecode(userData));
+      user = User.fromJson(jsonDecode(userData));
       return true;
     } catch (e) {
       await logout();
@@ -160,17 +163,17 @@ class AuthService with ChangeNotifier {
     }
   } 
 
-  Future<void> _guardarUsuario(Usuario usuario) async {
+  Future<void> _guardarUsuario(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    final userData = jsonEncode(usuario.toJson());
+    final userData = jsonEncode(user.toJson());
     await prefs.setString('usuario', userData);
   }
 
-  Future<Usuario?> cargarUsuario() async {
+  Future<User?> cargarUsuario() async {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('usuario');
     if( userData != null ) {
-      return Usuario.fromJson(jsonDecode(userData));
+      return User.fromJson(jsonDecode(userData));
     }
     return null;
   }

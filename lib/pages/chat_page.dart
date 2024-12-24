@@ -35,7 +35,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     socketService.socket.on('mensaje-personal', _escucharMensaje);
 
-    _cargarHistorial( chatService.usuarioPara.uid );
+    _cargarHistorial( chatService.usuarioPara.id );
   }
 
   void _cargarHistorial( String usuarioID ) async {
@@ -81,10 +81,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             CircleAvatar(
               backgroundColor: Colors.red[100],
               maxRadius: 15,
-              child: Text(usuarioPara.nombre.substring(0, 2), style: const TextStyle(fontSize: 12), ),
+              child: Text(usuarioPara.name.substring(0, 2), style: const TextStyle(fontSize: 12), ),
             ),
             const SizedBox(height: 3,),
-            Text( usuarioPara.nombre, style: const TextStyle(color: Colors.black87, fontSize: 12),)
+            Text( usuarioPara.name, style: const TextStyle(color: Colors.black87, fontSize: 12),)
           ],
         ),
         centerTitle: true,
@@ -184,7 +184,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     final newMessage = ChatMessage(
       message: texto, 
-      uid: authService.usuario.uid, 
+      uid: authService.user.id, 
       animationController: AnimationController(vsync: this, duration: const Duration(milliseconds: 200)),  
     );
     _messages.insert(0, newMessage);
@@ -195,8 +195,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     });
 
     socketService.emit('mensaje-personal', {
-      'from': authService.usuario.uid,
-      'to': chatService.usuarioPara.uid,
+      'from': authService.user.id,
+      'to': chatService.usuarioPara.id,
      'message': texto
     });
   }

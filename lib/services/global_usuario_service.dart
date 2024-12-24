@@ -1,18 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:realtime_chat/models/usuario.dart';
+import 'package:realtime_chat/models/user.dart';
 import 'package:flutter/material.dart';
 
 class GlobalUsuarioService with ChangeNotifier {
-  Usuario? _usuario;
+  User? _usuario;
 
-  Usuario? get usuario => _usuario;
+  User? get usuario => _usuario;
 
-  Future<void> guardarUsuario(Usuario usuario) async {
+  Future<void> guardarUsuario(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    final userData = jsonEncode(usuario.toJson());
+    final userData = jsonEncode(user.toJson());
     await prefs.setString('usuario', userData);
-    _usuario = usuario;
+    _usuario = user;
     notifyListeners();
   }
 
@@ -20,7 +20,7 @@ class GlobalUsuarioService with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('usuario');
     if (userData != null) {
-      _usuario = Usuario.fromJson(jsonDecode(userData));
+      _usuario = User.fromJson(jsonDecode(userData));
       notifyListeners();
     }
   }
