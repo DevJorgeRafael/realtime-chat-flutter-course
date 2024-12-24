@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 
@@ -7,9 +9,9 @@ import 'package:realtime_chat/models/users_response.dart';
 
 import 'package:realtime_chat/services/auth_service.dart';
 
-class UsuariosService with ChangeNotifier{
+class UsersService with ChangeNotifier{
 
-  Future<List<User>> getUsuarios () async {
+  Future<List<User>> getUsers () async {
     try {
       final response = await dio.Dio().get('${ Environment.apiUrl }/users', 
         options: dio.Options(
@@ -20,8 +22,8 @@ class UsuariosService with ChangeNotifier{
         )
       );
 
-      final usuarios = usersResponseFromjson( response.data );
-      return usuarios;
+      final usersResponse = UsersResponse.fromList(response.data);
+      return usersResponse.users;
     } catch (e) {
       print('Error al obtener usuarios: \n $e');
       return [];

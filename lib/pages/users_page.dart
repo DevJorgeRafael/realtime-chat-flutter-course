@@ -16,7 +16,7 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
 
-  final usuarioService = UsuariosService();
+  final usersService = UsersService();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<User> users = [];
@@ -134,7 +134,7 @@ class _UsersPageState extends State<UsersPage> {
 
   _cargarUsuarios () async {
 
-    users = await usuarioService.getUsuarios();
+    users = await usersService.getUsers();
     if ( mounted ) {
       setState(() => {});
     }

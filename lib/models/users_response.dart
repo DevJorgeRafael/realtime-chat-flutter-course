@@ -13,29 +13,23 @@ String usersResponseTojson(List<User> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class UsersResponse {
-  final String name;
-  final String email;
-  final bool online;
-  final String id;
+  final List<User> users;
 
   UsersResponse({
-    required this.name,
-    required this.email,
-    required this.online,
-    required this.id,
+    required this.users,
   });
 
-  factory UsersResponse.fromJson(Map<String, dynamic> json) => UsersResponse(
-        name: json["name"],
-        email: json["email"],
-        online: json["online"],
-        id: json["id"],
-      );
+  factory UsersResponse.fromList(List<dynamic> jsonList) {
+    final users = List<User>.from(jsonList.map((x) => User.fromJson(x)));
+    return UsersResponse(users: users);
+  }
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "email": email,
-        "online": online,
-        "id": id,
-      };
+  factory UsersResponse.fromJson(String str) {
+    final jsonList = json.decode(str) as List<dynamic>;
+    final users = List<User>.from(jsonList.map((x) => User.fromJson(x)));
+    return UsersResponse(users: users);
+  }
+
+
+  String toJson() => json.encode(users.map((x) => x.toJson()).toList());
 }
