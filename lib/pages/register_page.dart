@@ -76,13 +76,13 @@ class __FormState extends State<_Form> {
           BotonIngresarRojo(
             text: 'Registrarse',
             onPressed: authService.autenticando ? null : () async {
-              final registerOk = await authService.register(nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim());
+              final registerError = await authService.register(nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim());
 
-              if ( registerOk == true ) {
+              if ( registerError == null ) {
                 socketService.connect();
                 Navigator.pushReplacementNamed(context, 'usuarios');
               } else {
-                mostrarAlerta(context, 'Error en el registro', registerOk);
+                mostrarAlerta(context, 'Error en el registro', registerError);
               }
             },
           ),

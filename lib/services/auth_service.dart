@@ -95,7 +95,7 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future register(String nombre,  String email, String password ) async {
+  Future<String?> register(String nombre,  String email, String password ) async {
     autenticando = true;
 
     final data = {
@@ -120,22 +120,23 @@ class AuthService with ChangeNotifier {
 
         await _guardarToken(loginResponse.token);
         autenticando = false;
-        return true;
+        return null;
         
       } else {
-        return false;
+        return 'Error desconocido';
       }
       
     } catch (e) {
-      print('Error en registro: ');
+      print('Error en registro: $e');
+      autenticando = false;
+
       if( e is DioException ) {
         if( e.response != null ) {
           final errorResponse = e.response?.data;
-          return errorResponse['msg'];
+          return errorResponse['message'] ?? 'Error desconocido';
         }
       }
-      autenticando = false;
-      return false;
+      return 'Error en el servidor';
     }
   }
 
