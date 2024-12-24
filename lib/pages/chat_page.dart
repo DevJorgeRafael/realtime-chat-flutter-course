@@ -9,6 +9,8 @@ import 'package:realtime_chat/widgets/widgets.dart';
 import 'package:realtime_chat/models/mensajes_response.dart';
 
 class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
   @override
   State<ChatPage> createState() => _ChatPageState();
 }

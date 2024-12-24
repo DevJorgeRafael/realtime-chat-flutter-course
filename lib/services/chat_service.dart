@@ -13,7 +13,7 @@ class ChatService with ChangeNotifier {
   Future<List<Message>> getChat( String usuarioID ) async {
     try {
       final response = await dio.Dio().get(
-        '${Environment.apiUrl}/mensajes/$usuarioID',
+        '${Environment.apiUrl}/messages/$usuarioID',
         options: dio.Options(
           headers: {
             'Content-Type': 'application/json',
