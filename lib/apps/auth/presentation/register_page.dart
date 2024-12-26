@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:realtime_chat/helpers/mostrar_alerta.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:realtime_chat/services/services.dart';
+import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/helpers/mostrar_alerta.dart';
+import 'package:realtime_chat/injection_container.dart';
+
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -47,8 +50,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-    final socketService = Provider.of<SocketService>(context);
+    final authService = sl<AuthService>();
+    final socketService = sl<SocketService>();
 
     return Container(
       margin: const EdgeInsets.only(top: 40),
@@ -80,7 +83,7 @@ class __FormState extends State<_Form> {
 
               if ( registerError == null ) {
                 socketService.connect();
-                Navigator.pushReplacementNamed(context, 'usuarios');
+                context.go('/home');
               } else {
                 mostrarAlerta(context, 'Error en el registro', registerError);
               }
