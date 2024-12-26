@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/home/domain/chat_service.dart';
-import 'package:realtime_chat/apps/home/domain/socket_service.dart';
 import 'package:realtime_chat/apps/home/domain/users_service.dart';
 import 'package:realtime_chat/injection_container.dart';
 
@@ -34,44 +31,16 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
 
   @override
   Widget build(BuildContext context) {
-
-    final authService = sl<AuthService>();
-    final socketService = sl<SocketService>();
-    final usuario = authService.user;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text( usuario.name ),
-        elevation: 1,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon( Icons.exit_to_app_outlined ),
-          onPressed: () {
-            socketService.disconnect();
-            context.go('/login');
-            AuthService.logout();
-          },
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only( right: 10),
-            child: socketService.serverStatus == ServerStatus.online ? 
-            Icon( Icons.circle, color: Colors.green[400], )
-            : Icon( Icons.circle, color: Colors.red[500], ),
-          )
-        ],
+    return SmartRefresher(
+      controller: _refreshController,
+      enablePullDown: true,
+      onRefresh: _cargarUsuarios,
+      header: WaterDropHeader(
+        complete: Icon( Icons.check, color: Colors.blue[400] ),
+        waterDropColor: Colors.blue.shade400,
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        onRefresh: _cargarUsuarios,
-        header: WaterDropHeader(
-          complete: Icon( Icons.check, color: Colors.blue[400] ),
-          waterDropColor: Colors.blue.shade400,
-        ),
-        child: _listViewUsuarios(),
-      )
-   );
+      child: _listViewUsuarios(),
+    );
   }
 
   ListView _listViewUsuarios() {
@@ -116,7 +85,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
             PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) {
               // Definir la página a la que quieres navegar
-              return PersonalChatPage(); 
+              return const PersonalChatPage(); 
             },
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
