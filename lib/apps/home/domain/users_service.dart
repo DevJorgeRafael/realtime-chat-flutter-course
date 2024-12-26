@@ -5,7 +5,7 @@ import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/user.dart';
 import 'package:realtime_chat/models/users_response.dart';
 
-import 'package:realtime_chat/services/auth_service.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 
 class UsersService with ChangeNotifier{
 

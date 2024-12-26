@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/mensajes_response.dart';
 
 import 'package:realtime_chat/models/user.dart';
-import 'package:realtime_chat/services/services.dart';
 
 class ChatService with ChangeNotifier {
 

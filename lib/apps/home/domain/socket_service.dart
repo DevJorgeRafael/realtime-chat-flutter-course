@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/global/environment.dart';
-import 'package:realtime_chat/services/auth_service.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
