@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:realtime_chat/services/services.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/injection_container.dart';
 
 class ChatMessage extends StatelessWidget {
 
@@ -17,7 +17,7 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final authService = sl<AuthService>();
 
     return FadeTransition(
       opacity: animationController,

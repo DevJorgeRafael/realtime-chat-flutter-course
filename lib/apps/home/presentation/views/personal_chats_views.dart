@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/apps/home/domain/chat_service.dart';
+import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/apps/home/domain/users_service.dart';
+import 'package:realtime_chat/injection_container.dart';
+
 import 'package:realtime_chat/models/user.dart';
-import 'package:realtime_chat/pages/chat_page.dart';
-import 'package:realtime_chat/services/services.dart';
+import 'package:realtime_chat/apps/home/presentation/pages/personal_chat_page.dart';
 
 
-class UsersPage extends StatefulWidget {
-  const UsersPage({super.key});
+
+class PersonalChatsView extends StatefulWidget {
+  const PersonalChatsView({super.key});
   @override
-  State<UsersPage> createState() => _UsersPageState();
+  State<PersonalChatsView> createState() => _PersonalChatsViewState();
 }
 
-class _UsersPageState extends State<UsersPage> {
+class _PersonalChatsViewState extends State<PersonalChatsView> {
 
   final usersService = UsersService();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -30,8 +35,8 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
 
-    final authService = Provider.of<AuthService>(context);
-    final socketService = Provider.of<SocketService>(context);
+    final authService = sl<AuthService>();
+    final socketService = sl<SocketService>();
     final usuario = authService.user;
 
     return Scaffold(
@@ -43,7 +48,7 @@ class _UsersPageState extends State<UsersPage> {
           icon: const Icon( Icons.exit_to_app_outlined ),
           onPressed: () {
             socketService.disconnect();
-            Navigator.pushReplacementNamed(context, 'login');
+            context.go('/login');
             AuthService.logout();
           },
         ),
@@ -104,14 +109,14 @@ class _UsersPageState extends State<UsersPage> {
           ]
         ),
         onTap: () {
-          final chatService = Provider.of<ChatService>(context, listen: false);
+          final chatService = sl<ChatService>();
           chatService.usuarioPara = user;
           Navigator.push(
             context, 
             PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) {
               // Definir la página a la que quieres navegar
-              return ChatPage(); 
+              return PersonalChatPage(); 
             },
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
