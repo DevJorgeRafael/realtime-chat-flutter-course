@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final usersResponse = usersResponseFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:realtime_chat/models/user.dart';
@@ -29,7 +25,6 @@ class UsersResponse {
     final users = List<User>.from(jsonList.map((x) => User.fromJson(x)));
     return UsersResponse(users: users);
   }
-
 
   String toJson() => json.encode(users.map((x) => x.toJson()).toList());
 }

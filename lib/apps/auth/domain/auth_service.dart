@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:realtime_chat/models/login_response.dart';
+import 'package:realtime_chat/apps/auth/models/login_response.dart';
 import 'package:realtime_chat/models/user.dart';
 
 class AuthService with ChangeNotifier {
@@ -47,7 +47,7 @@ class AuthService with ChangeNotifier {
     };
 
     try {
-      final res = await _dio.post(
+      final res = await DioClient.instance.post(
         '/auth/login',
         data: data,
       );

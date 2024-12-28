@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:realtime_chat/apps/auth/widgets/boton_ingresar_rojo.dart';
+import 'package:realtime_chat/apps/auth/widgets/custom_input.dart';
+import 'package:realtime_chat/apps/auth/widgets/labels.dart';
 
 import 'package:realtime_chat/apps/home/domain/socket_service.dart';
 import 'package:realtime_chat/helpers/mostrar_alerta.dart';
 import 'package:realtime_chat/injection_container.dart';
-
-import 'package:realtime_chat/widgets/widgets.dart';
+import 'package:realtime_chat/widgets/logo.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/home/domain/chat_service.dart';
 import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/apps/home/widgets/chat_message.dart';
 import 'package:realtime_chat/injection_container.dart';
-import 'package:realtime_chat/widgets/widgets.dart';
-import 'package:realtime_chat/models/mensajes_response.dart';
+import 'package:realtime_chat/apps/home/models/mensajes_response.dart';
 
 class PersonalChatPage extends StatefulWidget {
   const PersonalChatPage({super.key});
