@@ -16,7 +16,6 @@ class PersonalChatsView extends StatefulWidget {
 }
 
 class _PersonalChatsViewState extends State<PersonalChatsView> {
-
   final usersService = UsersService();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
@@ -45,7 +44,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
   ListView _listViewUsers() {
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
-      itemBuilder: ( _ , i ) => _userListTile(users[i]) , 
+      itemBuilder: ( _ , i ) => _userListTile(users[i]), 
       separatorBuilder: ( _ , i ) => const Divider(
         // color: Colors.grey,
         height: 8,
@@ -93,13 +92,11 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
   }
 
   _loadUsers () async {
-
     users = await usersService.getUsers();
     if ( mounted ) {
       setState(() => {});
     }
 
-    // await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();
   }
 }
