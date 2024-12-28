@@ -8,7 +8,7 @@ class CustomInput extends StatelessWidget {
   final bool isPassword;
   final String? errorMessage; // Mensaje de error opcional
 
-  const CustomInput({
+  const CustomInput({super.key, 
     required this.icon,
     required this.placeholder,
     required this.textController,

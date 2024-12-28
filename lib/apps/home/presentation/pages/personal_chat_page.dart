@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -120,14 +118,14 @@ class _PersonalChatPageState extends State<PersonalChatPage> with TickerProvider
     );
   }
 
-  Widget _inputChat() {
-
+Widget _inputChat() {
     return SafeArea(
       child: Container(
-        margin: const EdgeInsets.symmetric( horizontal: 8 ),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-
+            // Campo de texto
             Flexible(
               child: TextField(
                 controller: _textController,
@@ -138,46 +136,69 @@ class _PersonalChatPageState extends State<PersonalChatPage> with TickerProvider
                   });
                 },
                 decoration: const InputDecoration.collapsed(
-                  hintText: 'Enviar mensaje'
+                  hintText: 'Mensaje',
                 ),
                 focusNode: _focusNode,
               ),
             ),
 
-            //* Botón de enviar
-            Container(
-              margin: const EdgeInsets.symmetric( horizontal: 4 ),
-              child: Platform.isIOS ? 
-              CupertinoButton(
-                    onPressed: _estaEscribiendo
-                        ? () => _handleSubmit(_textController.text.trim())
-                        : null,
-                    child: Text('Enviar',
-                        style: TextStyle( color: _estaEscribiendo ? Colors.red[400] : CupertinoColors.inactiveGray)),
-                  )
-              : Container(
-                margin: const EdgeInsets.symmetric( horizontal: 4 ),
-                child: IconTheme(
-                  data: IconThemeData( color: _estaEscribiendo ? Colors.red[400] : Colors.grey ),
-                  child: IconButton(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    icon: const Icon( Icons.send ),
-                    onPressed: () => _estaEscribiendo
-                      ? _handleSubmit( _textController.text.trim() )
-                      : null,
+            // Contenedor de íconos o botón de enviar
+            Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                // Íconos (se muestran solo cuando no se está escribiendo)
+                AnimatedOpacity(
+                  opacity: _estaEscribiendo ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.mic, color: Colors.grey),
+                        onPressed: () {
+                          print("Audio pressed");
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.photo, color: Colors.grey),
+                        onPressed: () {
+                          print("Gallery pressed");
+                        },
+                      ),
+                      IconButton(
+                        icon:
+                            const Icon(Icons.photo_camera, color: Colors.grey),
+                        onPressed: () {
+                          print("Camera pressed");
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.attach_file, color: Colors.grey),
+                        onPressed: () {
+                          print("Attach file pressed");
+                        },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            )
-
-
+                // Botón de enviar (se muestra solo cuando se está escribiendo)
+                AnimatedOpacity(
+                  opacity: _estaEscribiendo ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IconButton(
+                    icon: const Icon(Icons.send, color: Colors.red),
+                    onPressed: () => _estaEscribiendo
+                        ? _handleSubmit(_textController.text.trim())
+                        : null,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-      )
+      ),
     );
-
   }
+
 
   _handleSubmit(String texto) {
 

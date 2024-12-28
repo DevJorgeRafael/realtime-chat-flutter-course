@@ -37,19 +37,7 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos'),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu), // Ícono de menú para abrir el Drawer
-              onPressed: () {
-                Scaffold.of(context).openDrawer(); // Abre el Drawer
-              },
-            );
-          },
-        ),
-      ),
+      appBar: AppBar(title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos')),
       drawer: _buildDrawer(usuario), 
       body: IndexedStack(
         index: _selectedIndex,
@@ -74,38 +62,48 @@ class _HomePageState extends State<HomePage> {
                 decoration: const BoxDecoration(
                   color: Colors.red,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
                   children: [
-                    Text(
-                      usuario.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
+                    const Icon(Icons.person, size: 60, color: Colors.white,),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          socketService.serverStatus == ServerStatus.online
-                              ? 'Online'
-                              : 'Offline',
-                          style: TextStyle(
-                            color: Colors.grey[300],
-                            fontSize: 16,
+                          usuario.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.circle,
-                          color:
+                        Text(
+                          usuario.email,
+                          style: const TextStyle(color: Colors.white,),
+                        ),
+                        // const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Text(
                               socketService.serverStatus == ServerStatus.online
-                                  ? Colors.green[400]
-                                  : Colors.grey[300],
-                          size: 14,
+                                  ? 'Online'
+                                  : 'Offline',
+                              style: TextStyle(
+                                color: Colors.grey[300],
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.circle,
+                              color:
+                                  socketService.serverStatus == ServerStatus.online
+                                      ? Colors.green[400]
+                                      : Colors.grey[300],
+                              size: 14,
+                            ),
+                          ],
                         ),
                       ],
                     ),
