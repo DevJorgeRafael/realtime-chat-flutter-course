@@ -5,6 +5,7 @@ import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/service/global_usuario_service.dart';
 import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/shared/widgets/logo.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -18,9 +19,15 @@ class SplashPage extends StatelessWidget {
 
     return const Scaffold(
       body: Center(
-        child: Text(
-          'Red Social UTN',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Red Social UTN',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Logo()
+          ]
         ),
       ),
     );
