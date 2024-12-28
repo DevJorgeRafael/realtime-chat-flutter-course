@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/home/domain/socket_service.dart';
 import 'package:realtime_chat/apps/home/presentation/views/group_chats_view.dart';
-import 'package:realtime_chat/apps/home/presentation/views/personal_chats_views.dart';
+import 'package:realtime_chat/apps/home/presentation/views/personal_chats_view.dart';
 import 'package:realtime_chat/apps/home/widgets/custom_chat_bottom_navigation_bar.dart';
 import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/models/user.dart';
@@ -37,7 +37,16 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos')),
+      appBar: AppBar(
+        title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 15),
+        ],
+        ),
       drawer: _buildDrawer(usuario), 
       body: IndexedStack(
         index: _selectedIndex,

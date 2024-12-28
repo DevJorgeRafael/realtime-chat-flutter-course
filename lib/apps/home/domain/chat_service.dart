@@ -7,11 +7,11 @@ import 'package:realtime_chat/shared/service/dio_client.dart';
 
 class ChatService with ChangeNotifier {
   final String url = AppConstants.baseAPIUrl;
-  late User usuarioPara; 
+  late User userReceiver; 
 
-  Future<List<Message>> getChat( String usuarioID ) async {
+  Future<List<Message>> getChat( String userId ) async {
     try {
-      final response = await DioClient.instance.get('/messages/$usuarioID');
+      final response = await DioClient.instance.get('/messages/$userId');
       final messagesResponse = mensajesResponseFromJson( response.toString() );
       return messagesResponse.messages;
     } catch ( e ) {

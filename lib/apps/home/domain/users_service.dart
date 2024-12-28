@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:realtime_chat/config/constants/app_constants.dart';
-
 import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/apps/home/models/users_response.dart';
-
 import 'package:realtime_chat/shared/service/dio_client.dart';
 
 class UsersService with ChangeNotifier{
-  final String url = AppConstants.baseAPIUrl;
 
   Future<List<User>> getUsers () async {
     try {

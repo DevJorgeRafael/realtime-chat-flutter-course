@@ -9,8 +9,6 @@ import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/personal_chat_page.dart';
 
-
-
 class PersonalChatsView extends StatefulWidget {
   const PersonalChatsView({super.key});
   @override
@@ -26,7 +24,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
 
   @override
   void initState() {
-    _cargarUsuarios();
+    _loadUsers();
     super.initState();
   }
 
@@ -35,40 +33,44 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
-      onRefresh: _cargarUsuarios,
+      onRefresh: _loadUsers,
       header: WaterDropHeader(
-        complete: Icon( Icons.check, color: Colors.blue[400] ),
-        waterDropColor: Colors.blue.shade400,
+        complete: Icon( Icons.check, color: Colors.red[400] ),
+        waterDropColor: Colors.red.shade400,
       ),
-      child: _listViewUsuarios(),
+      child: _listViewUsers(),
     );
   }
 
-  ListView _listViewUsuarios() {
+  ListView _listViewUsers() {
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
-      itemBuilder: ( _ , i ) => _usuarioListTile(users[i]) , 
-      separatorBuilder: ( _ , i ) => const Divider(),
+      itemBuilder: ( _ , i ) => _userListTile(users[i]) , 
+      separatorBuilder: ( _ , i ) => const Divider(
+        // color: Colors.grey,
+        height: 8,
+      ),
       itemCount: users.length
     );
   }
 
-  ListTile _usuarioListTile(User user) {
+  ListTile _userListTile(User user) {
     return ListTile(
         title: Text( user.name, style: const TextStyle(fontWeight: FontWeight.bold) ),
         subtitle: Text( user.email ),
         leading: Stack(
           children: [
             CircleAvatar(
+              radius: 32,
               backgroundColor: Colors.red[300],
-              child: const Icon( Icons.person_sharp )
+              child: const Icon( Icons.person_sharp, size: 36 )
             ),
             Positioned(
-              right: 0,
+              right: 5,
               bottom: 0,
               child: Container(
-                width: 12,
-                height: 12,
+                width: 16,
+                height: 16,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: user.online? Colors.green[400] : Colors.red[400],
@@ -80,7 +82,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
         ),
         onTap: () {
           final chatService = sl<ChatService>();
-          chatService.usuarioPara = user;
+          chatService.userReceiver = user;
           NavigationHelper.navigateWithAnimation(
             context,
             const PersonalChatPage(),
@@ -90,7 +92,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
       );
   }
 
-  _cargarUsuarios () async {
+  _loadUsers () async {
 
     users = await usersService.getUsers();
     if ( mounted ) {

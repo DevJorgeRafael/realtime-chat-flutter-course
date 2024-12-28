@@ -84,7 +84,7 @@ class __FormState extends State<_Form> {
 
           BotonIngresarRojo(
             text: 'Ingresar', 
-            onPressed: authService.autenticando? null : () async {
+            onPressed: authService.authenticating? null : () async {
 
               FocusScope.of( context ).unfocus();
 

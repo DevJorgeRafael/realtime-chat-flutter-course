@@ -37,7 +37,7 @@ class _PersonalChatPageState extends State<PersonalChatPage> with TickerProvider
 
     socketService.socket.on('mensaje-personal', _escucharMensaje);
 
-    _cargarHistorial( chatService.usuarioPara.id );
+    _cargarHistorial( chatService.userReceiver.id );
   }
 
   void _cargarHistorial( String usuarioID ) async {
@@ -76,7 +76,7 @@ class _PersonalChatPageState extends State<PersonalChatPage> with TickerProvider
   @override
   Widget build(BuildContext context) {
 
-    final usuarioPara = chatService.usuarioPara;
+    final usuarioPara = chatService.userReceiver;
 
     return Scaffold(
       appBar: AppBar(
@@ -225,7 +225,7 @@ Widget _inputChat() {
 
     socketService.emit('mensaje-personal', {
       'from': authService.user.id,
-      'to': chatService.usuarioPara.id,
+      'to': chatService.userReceiver.id,
      'message': texto
     });
   }

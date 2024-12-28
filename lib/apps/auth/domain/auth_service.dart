@@ -11,14 +11,14 @@ import 'package:realtime_chat/shared/models/user.dart';
 
 class AuthService with ChangeNotifier {
   late User user;
-  bool _autenticando = false;
+  bool _authenticating = false;
 
   // Create storage
   final _storage = const FlutterSecureStorage();
 
-  bool get autenticando => _autenticando;
-  set autenticando( bool valor ) {
-    _autenticando = valor;
+  bool get authenticating => _authenticating;
+  set authenticating( bool valor ) {
+    _authenticating = valor;
     notifyListeners();
   }
 
@@ -36,7 +36,7 @@ class AuthService with ChangeNotifier {
 
 
   Future<Map<String, dynamic>> login( String email, String password ) async {
-    autenticando = true;
+    authenticating = true;
 
     final data = {
       'email': email,
@@ -53,19 +53,19 @@ class AuthService with ChangeNotifier {
         final loginResponse = loginResponseFromJson( res.toString() );
         user = loginResponse.user;
 
-        await _guardarToken(loginResponse.token);
-        await _guardarUsuario(loginResponse.user);
+        await _saveToken(loginResponse.token);
+        await _saveUser(loginResponse.user);
 
-        autenticando = false;
+        authenticating = false;
         return {'ok': 'true'};
       } else {
-        autenticando = false;
+        authenticating = false;
         return {'ok': 'false', 'message': 'Error desconocido'};
       }
 
     } catch (e) {
       print('Error en login: $e');
-      autenticando = false;
+      authenticating = false;
 
       if (e is DioException) {
         final response = e.response;
@@ -90,7 +90,7 @@ class AuthService with ChangeNotifier {
   }
 
   Future<String?> register(String nombre,  String email, String password ) async {
-    autenticando = true;
+    authenticating = true;
 
     final data = {
       'name': nombre,
@@ -108,8 +108,8 @@ class AuthService with ChangeNotifier {
         final loginResponse = loginResponseFromJson( res.toString() );
         user = loginResponse.user;
 
-        await _guardarToken(loginResponse.token);
-        autenticando = false;
+        await _saveToken(loginResponse.token);
+        authenticating = false;
         return null;
         
       } else {
@@ -118,7 +118,7 @@ class AuthService with ChangeNotifier {
       
     } catch (e) {
       print('Error en registro: $e');
-      autenticando = false;
+      authenticating = false;
 
       if( e is DioException ) {
         if( e.response != null ) {
@@ -150,13 +150,13 @@ class AuthService with ChangeNotifier {
     }
   } 
 
-  Future<void> _guardarUsuario(User user) async {
+  Future<void> _saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     final userData = jsonEncode(user.toJson());
     await prefs.setString('usuario', userData);
   }
 
-  Future<User?> cargarUsuario() async {
+  Future<User?> loadUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('usuario');
     if( userData != null ) {
@@ -165,7 +165,7 @@ class AuthService with ChangeNotifier {
     return null;
   }
 
-  Future _guardarToken( String token ) async {
+  Future _saveToken( String token ) async {
     // Write value
     return await _storage.write(key: 'token', value: token);
   }

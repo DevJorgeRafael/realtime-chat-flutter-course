@@ -80,7 +80,7 @@ class __FormState extends State<_Form> {
           ),
           BotonIngresarRojo(
             text: 'Registrarse',
-            onPressed: authService.autenticando ? null : () async {
+            onPressed: authService.authenticating ? null : () async {
               final registerError = await authService.register(nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim());
 
               if ( registerError == null ) {
