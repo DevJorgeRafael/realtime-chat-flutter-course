@@ -1,9 +1,8 @@
-
-
 import 'package:realtime_chat/apps/home/models/rooms_response.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
+import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 
-class RoomsService {
+class RoomsService extends SafeChangeNotifier {
   Future<List<Room>> getRooms() async {
     try {
       final response = await DioClient.instance.get('/rooms');

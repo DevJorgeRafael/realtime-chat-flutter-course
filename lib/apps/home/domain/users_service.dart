@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/apps/home/models/users_response.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
+import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 
-class UsersService with ChangeNotifier{
+class UsersService extends SafeChangeNotifier{
 
   Future<List<User>> getUsers () async {
     try {

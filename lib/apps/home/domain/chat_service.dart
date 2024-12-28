@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:realtime_chat/config/constants/app_constants.dart';
 import 'package:realtime_chat/apps/home/models/mensajes_response.dart';
 
 import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
+import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 
-class ChatService with ChangeNotifier {
+class ChatService extends SafeChangeNotifier {
   final String url = AppConstants.baseAPIUrl;
   late User userReceiver; 
 

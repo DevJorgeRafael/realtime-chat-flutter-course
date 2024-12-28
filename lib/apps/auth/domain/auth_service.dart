@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
+import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/apps/auth/models/login_response.dart';
 import 'package:realtime_chat/shared/models/user.dart';
 
-class AuthService with ChangeNotifier {
+class AuthService extends SafeChangeNotifier {
   late User user;
   bool _authenticating = false;
 

@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:realtime_chat/config/constants/app_constants.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 enum ServerStatus { online, offline, connecting }
 
-class SocketService with ChangeNotifier {
+class SocketService extends SafeChangeNotifier {
   ServerStatus _serverStatus = ServerStatus.connecting;
   late io.Socket _socket;
 

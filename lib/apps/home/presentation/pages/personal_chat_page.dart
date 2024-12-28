@@ -232,7 +232,7 @@ Widget _inputChat() {
 
   @override
   void dispose() {
-    //TODO: off del socket
+    socketService.socket.off('mensaje-personal');
 
     for (ChatMessage message in _messages) {
       message.animationController.dispose();
