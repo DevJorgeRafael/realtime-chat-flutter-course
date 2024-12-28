@@ -10,9 +10,6 @@ import 'package:realtime_chat/apps/auth/models/login_response.dart';
 import 'package:realtime_chat/models/user.dart';
 
 class AuthService with ChangeNotifier {
-
-  // Instancia de Dio
-  final Dio _dio = Dio();
   late User user;
   bool _autenticando = false;
 
