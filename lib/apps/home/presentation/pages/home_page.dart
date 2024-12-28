@@ -56,7 +56,19 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: CustomChatBottomNavigationBar(
         selectedIndex: _selectedIndex, 
         onItemSelected: _onItemSelected
-        ),
+      ),
+      floatingActionButton: _selectedIndex == 0 ? _buildFloatingActionButton() : null,
+    );
+  }
+
+  // Función para construir el FAB dinámico
+  Widget? _buildFloatingActionButton() {
+      return FloatingActionButton(
+        onPressed: () {
+          // _onCreateGroup();
+        },
+        backgroundColor: Colors.red[400],
+        child: const Icon(Icons.group_add),
     );
   }
 
