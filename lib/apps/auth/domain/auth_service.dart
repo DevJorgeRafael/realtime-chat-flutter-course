@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:realtime_chat/config/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:realtime_chat/global/environment.dart';
 import 'package:realtime_chat/models/login_response.dart';
 import 'package:realtime_chat/models/user.dart';
 
@@ -15,6 +15,7 @@ class AuthService with ChangeNotifier {
   final Dio _dio = Dio();
   late User user;
   bool _autenticando = false;
+  final String url = '${AppConstants.baseAPIUrl}/auth';
 
   // Create storage
   final _storage = const FlutterSecureStorage();
@@ -27,14 +28,14 @@ class AuthService with ChangeNotifier {
 
   //Getters del token de forma estática
   static Future<String> getToken() async {
-    final _storage = FlutterSecureStorage();
-    final token = await _storage.read(key: 'token');
+    const storage = FlutterSecureStorage();
+    final token = await storage.read(key: 'token');
     return token ?? '';
   }
 
   static Future<void> deleteToken() async {
-    final _storage = new FlutterSecureStorage();
-    await _storage.delete(key: 'token');
+    const storage = FlutterSecureStorage();
+    await storage.delete(key: 'token');
   }
 
 
@@ -48,7 +49,7 @@ class AuthService with ChangeNotifier {
 
     try {
       final res = await _dio.post(
-        '${ Environment.apiUrl }/auth/login',
+        '$url/login',
         data: data,
         options: Options(
           headers: {
@@ -107,7 +108,7 @@ class AuthService with ChangeNotifier {
     };
   
     try {
-      final res = await _dio.post('${ Environment.apiUrl }/auth/register',
+      final res = await _dio.post('$url/register',
         data: data,
         options: Options(
           headers: {
@@ -187,5 +188,4 @@ class AuthService with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('usuario');
   }
-
 }

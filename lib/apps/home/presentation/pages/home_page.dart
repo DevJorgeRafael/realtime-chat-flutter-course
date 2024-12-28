@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/home/domain/socket_service.dart';
@@ -93,10 +94,7 @@ class _HomePageState extends State<HomePage> {
                               ? 'Online'
                               : 'Offline',
                           style: TextStyle(
-                            color: socketService.serverStatus ==
-                                    ServerStatus.online
-                                ? Colors.green[400]
-                                : Colors.red[400],
+                            color: Colors.grey[300],
                             fontSize: 16,
                           ),
                         ),
@@ -106,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                           color:
                               socketService.serverStatus == ServerStatus.online
                                   ? Colors.green[400]
-                                  : Colors.red[400],
+                                  : Colors.grey[300],
                           size: 14,
                         ),
                       ],
@@ -117,11 +115,11 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Cerrar Sesión'),
-                // onTap: () {
-                //   socketService.disconnect();
-                //   AuthService.logout();
-                //   Navigator.pushReplacementNamed(context, '/login');
-                // },
+                onTap: () {
+                  socketService.disconnect();
+                  AuthService.logout();
+                  context.go('/login');
+                },
               ),
             ],
           ),
