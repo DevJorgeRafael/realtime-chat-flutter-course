@@ -18,8 +18,6 @@ class SocketService with ChangeNotifier {
   void connect() async {
 
     final token = await AuthService.getToken();
-
-    print("Socket Url <---->  ${AppConstants.baseSocketUrl}");
     // Io client
     _socket = io.io( AppConstants.baseSocketUrl, {
       'transports': ['websocket'],

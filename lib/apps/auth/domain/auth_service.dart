@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:realtime_chat/config/constants/app_constants.dart';
+import 'package:realtime_chat/shared/service/dio_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/models/login_response.dart';
@@ -15,7 +15,6 @@ class AuthService with ChangeNotifier {
   final Dio _dio = Dio();
   late User user;
   bool _autenticando = false;
-  final String url = '${AppConstants.baseAPIUrl}/auth';
 
   // Create storage
   final _storage = const FlutterSecureStorage();
@@ -49,13 +48,8 @@ class AuthService with ChangeNotifier {
 
     try {
       final res = await _dio.post(
-        '$url/login',
+        '/auth/login',
         data: data,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        )
       );
 
       if(res.statusCode == 200) {
@@ -102,22 +96,18 @@ class AuthService with ChangeNotifier {
     autenticando = true;
 
     final data = {
-      'nombre': nombre,
+      'name': nombre,
       'email': email,
       'password': password
     };
   
     try {
-      final res = await _dio.post('$url/register',
+      final res = await DioClient.instance.post(
+        '/auth/register',
         data: data,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        )
       );
 
-      if(res.statusCode == 200) {
+      if(res.statusCode == 201) {
         final loginResponse = loginResponseFromJson( res.toString() );
         user = loginResponse.user;
 

@@ -1,5 +1,5 @@
  import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/config/constants/app_constants.dart';
 
 class DioClient {
@@ -10,7 +10,6 @@ class DioClient {
       receiveTimeout: const Duration(milliseconds: 3000),
       headers: {
         'Content-Type': 'application/json',
-
       }
     )
   );
@@ -24,17 +23,18 @@ class DioClient {
           return handler.next(options);
         }
 
-        if ( options.headers.containsKey('x-token')) {
-          const storage = FlutterSecureStorage();
-          final token = await storage.read(key: 'token');
-          if (token != null) {
-            options.headers['x-token'] = token;
-          }
+        if ( !options.headers.containsKey('x-token')) {
+          options.headers['x-token'] = await AuthService.getToken();
         }
 
         return handler.next(options);
       },
       onError: (error, handler) {
+        if ( error.response?.statusCode == 401 ) {
+          AuthService.deleteToken();
+          AuthService.logout();
+        }
+
         return handler.next(error);
       }
     ));
