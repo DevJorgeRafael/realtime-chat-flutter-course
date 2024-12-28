@@ -3,9 +3,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:realtime_chat/apps/home/domain/chat_service.dart';
 import 'package:realtime_chat/apps/home/domain/users_service.dart';
+import 'package:realtime_chat/helpers/navigation_helper.dart';
 import 'package:realtime_chat/injection_container.dart';
 
-import 'package:realtime_chat/models/user.dart';
+import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/personal_chat_page.dart';
 
 
@@ -59,7 +60,7 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
         leading: Stack(
           children: [
             CircleAvatar(
-              backgroundColor: Colors.red[100],
+              backgroundColor: Colors.red[300],
               child: const Icon( Icons.person_sharp )
             ),
             Positioned(
@@ -80,27 +81,10 @@ class _PersonalChatsViewState extends State<PersonalChatsView> {
         onTap: () {
           final chatService = sl<ChatService>();
           chatService.usuarioPara = user;
-          Navigator.push(
-            context, 
-            PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) {
-              // Definir la página a la que quieres navegar
-              return const PersonalChatPage(); 
-            },
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              var begin = const Offset(1.0, 0.0); 
-
-              var end = Offset.zero;
-              var curve = Curves.easeInOut;
-
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              var offsetAnimation = animation.drive(tween);
-
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 300),
-          ),
+          NavigationHelper.navigateWithAnimation(
+            context,
+            const PersonalChatPage(),
+            direction: NavigationDirection.right
           );
         },
       );

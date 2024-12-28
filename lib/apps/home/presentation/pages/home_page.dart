@@ -8,7 +8,7 @@ import 'package:realtime_chat/apps/home/presentation/views/group_chats_view.dart
 import 'package:realtime_chat/apps/home/presentation/views/personal_chats_views.dart';
 import 'package:realtime_chat/apps/home/widgets/custom_chat_bottom_navigation_bar.dart';
 import 'package:realtime_chat/injection_container.dart';
-import 'package:realtime_chat/models/user.dart';
+import 'package:realtime_chat/shared/models/user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

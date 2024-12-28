@@ -7,7 +7,7 @@ import 'package:realtime_chat/shared/service/dio_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:realtime_chat/apps/auth/models/login_response.dart';
-import 'package:realtime_chat/models/user.dart';
+import 'package:realtime_chat/shared/models/user.dart';
 
 class AuthService with ChangeNotifier {
   late User user;

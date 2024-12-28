@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:realtime_chat/models/user.dart';
+import 'package:realtime_chat/shared/models/user.dart';
 
 List<User> usersResponseFromjson(String str) =>
     List<User>.from(json.decode(str).map((x) => User.fromJson(x)));

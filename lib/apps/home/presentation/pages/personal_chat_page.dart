@@ -50,6 +50,10 @@ class _PersonalChatPageState extends State<PersonalChatPage> with TickerProvider
       animationController: AnimationController(vsync: this, duration: const Duration(milliseconds: 300))..forward(),
     ));
 
+    if( !mounted ) {
+      return;
+    }
+
     setState(() {
       _messages.insertAll(0, history);
     });
