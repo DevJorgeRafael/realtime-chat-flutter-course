@@ -44,10 +44,10 @@ class _PersonalChatPageState extends State<PersonalChatPage>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red,
         elevation: 1,
         title: _buildAppBarTitle(usuarioPara),
-        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -68,17 +68,14 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   }
 
   Widget _buildAppBarTitle(User usuarioPara) {
-    return Column(
+    return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: Colors.red[100],
-          maxRadius: 15,
-          child: Text(usuarioPara.name.substring(0, 2),
-              style: const TextStyle(fontSize: 12)),
-        ),
-        const SizedBox(height: 3),
+        const Icon(Icons.account_circle, color: Colors.white, size: 42,),
+        const SizedBox(width: 3),
         Text(usuarioPara.name,
-            style: const TextStyle(color: Colors.black87, fontSize: 12)),
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        const Spacer(),
+        const Icon(Icons.call, color: Colors.white, size: 24),
       ],
     );
   }
@@ -121,23 +118,28 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   }
 
   Widget _buildActionIcons() {
-    return const Row(
+    return Row(
       children: [
         IconButton(
-            icon: Icon(Icons.mic, color: Colors.grey),
-            onPressed: handleAudioAction),
+          icon: const Icon(Icons.mic, color: Colors.grey),
+          onPressed: () => handleAudioAction(),
+        ),
         IconButton(
-            icon: Icon(Icons.photo, color: Colors.grey),
-            onPressed: handleGalleryAction),
+          icon: const Icon(Icons.photo, color: Colors.grey),
+          onPressed: () => handleGalleryAction(context),
+        ),
         IconButton(
-            icon: Icon(Icons.photo_camera, color: Colors.grey),
-            onPressed: handleCameraAction),
+          icon: const Icon(Icons.photo_camera, color: Colors.grey),
+          onPressed: () => handleCameraAction(context),
+        ),
         IconButton(
-            icon: Icon(Icons.attach_file, color: Colors.grey),
-            onPressed: handleAttachFileAction),
+          icon: const Icon(Icons.attach_file, color: Colors.grey),
+          onPressed: () => handleAttachFileAction(context),
+        ),
       ],
     );
   }
+
 
   void _handleSubmit(String texto) {
     if (texto.isEmpty) return;
