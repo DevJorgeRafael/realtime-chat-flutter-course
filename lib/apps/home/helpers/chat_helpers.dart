@@ -17,8 +17,8 @@ Future<void> handleAudioStart(BuildContext context) async {
   }
 }
 
-Future<void> handleAudioStop(BuildContext context) async {
-  await stopRecording();
+Future<String?> handleAudioStop(BuildContext context) async {
+  return await stopRecording();
 }
 
 Future<void> handleGalleryAction(BuildContext context) async {
@@ -51,13 +51,26 @@ Future<void> handleCameraAction(BuildContext context) async {
   }
 }
 
-Future<void> handleAttachFileAction(BuildContext context) async {
+Future<void> handleAttachFileAction(BuildContext context, Function onFileSelected) async {
   // Lógica para adjuntar archivos
-  final result = await FileSelector.pickFile(allowedExtensions: ['pdf', 'docx', 'txt', 'xslm', 'zip', 'rar', 'html', 'css', 'js', 'ts']);
+  final result = await FileSelector.pickFile(allowedExtensions: [
+    'pdf', 'docx', 'txt', 'xslm', 'zip', 'rar', 'html', 'css', 'js', 'ts'
+  ]);
+
   if (result != null) {
-    await FileManager.saveFile(result.files.single.path!, 'Documents');
+    final filePath = result.files.single.path!;
+    final fileName = result.files.single.name;
+
+    await FileManager.saveFile(filePath, 'Documents');
+
+    onFileSelected(filePath, fileName);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('File attached: ${result.files.single.name}')),
+      SnackBar(content: Text('File attached: $fileName')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No file selected')),
     );
   }
 }

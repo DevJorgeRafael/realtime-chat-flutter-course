@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class FileManager {
   /// Obtiene la ruta base para guardar los archivos.
@@ -17,7 +18,6 @@ class FileManager {
         await dir.create(recursive: true);
       }
     }
-
     return basePath;
   }
 
@@ -50,4 +50,16 @@ class FileManager {
     final directory = Directory(folderPath);
     return directory.listSync();
   }
+
+  /// Abre un archivo utilizando la herramienta predeterminada del sistema.
+  static Future<void> openFile(String filePath) async {
+    try {
+      final result = await OpenFile.open(filePath);
+      if (result.type != ResultType.done) {
+        print('Error opening file: ${result.message}');
+      }
+    } catch(e) {
+      print('Error opening file: $e');
+    }
+  } 
 }

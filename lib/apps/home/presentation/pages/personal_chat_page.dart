@@ -6,7 +6,7 @@ import 'package:realtime_chat/apps/home/domain/socket_service.dart';
 import 'package:realtime_chat/apps/home/widgets/chat_message.dart';
 import 'package:realtime_chat/apps/home/helpers/chat_helpers.dart';
 import 'package:realtime_chat/injection_container.dart';
-import 'package:realtime_chat/apps/home/models/mensajes_response.dart';
+import 'package:realtime_chat/apps/home/models/messages_response.dart';
 import 'package:realtime_chat/shared/models/user.dart';
 
 class PersonalChatPage extends StatefulWidget {
@@ -128,13 +128,30 @@ class _PersonalChatPageState extends State<PersonalChatPage>
           },
           onLongPressUp: () async {
             setState(() => isRecording = false);
-            await handleAudioStop(context);
+            final audioPath = await handleAudioStop(context);
+
+            if (audioPath != null) {
+              final newMessage = ChatMessage(
+                audioUrl: audioPath, // Ruta del archivo de audio
+                uid: authService.user.id,
+                animationController: AnimationController(
+                  vsync: this,
+                  duration: const Duration(milliseconds: 200),
+                ),
+              );
+
+              setState(() {
+                _messages.insert(0, newMessage);
+              });
+
+              newMessage.animationController.forward();
+            }
           },
           child: Icon(
-            Icons.mic, 
-            color: isRecording? Colors.red : Colors.grey,
-            size: isRecording? 36: 24,
-            ),
+            Icons.mic,
+            color: isRecording ? Colors.red : Colors.grey,
+            size: isRecording ? 48 : 24,
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.photo, color: Colors.grey),
@@ -146,11 +163,29 @@ class _PersonalChatPageState extends State<PersonalChatPage>
         ),
         IconButton(
           icon: const Icon(Icons.attach_file, color: Colors.grey),
-          onPressed: () => handleAttachFileAction(context),
+          onPressed: () => handleAttachFileAction(context, (filePath, fileName) {
+            _insertFileMessage(filePath, fileName);
+          }),
         ),
       ],
     );
   }
+
+  void _insertFileMessage(String filePath, String fileName) {
+    final newMessage = ChatMessage(
+      uid: authService.user.id,
+      filePath: filePath,
+      fileName: fileName,
+      animationController: AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+      )..forward(),
+    );
+
+    setState(() => _messages.insert(0, newMessage));
+  }
+
+
 
 
   void _handleSubmit(String texto) {
@@ -174,35 +209,135 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       'from': authService.user.id,
       'to': chatService.userReceiver.id,
       'message': texto,
+      'type': 'text',
+      'fileUrl': null,
     });
   }
 
   void _cargarHistorial(String usuarioID) async {
+    // Obtener los mensajes del servicio
     List<Message> chat = await chatService.getChat(usuarioID);
-    final history = chat.map((m) => ChatMessage(
-          message: m.message,
+
+    // Mapear los mensajes al widget `ChatMessage`
+    final history = chat.map((m) {
+      if (m.type == "text") {
+        // Si el mensaje es de tipo texto
+        return ChatMessage(
+          message: m.message ?? "", // Mostrar texto del mensaje
           uid: m.from,
           animationController: AnimationController(
-              vsync: this, duration: const Duration(milliseconds: 300))
-            ..forward(),
-        ));
+            vsync: this,
+            duration: const Duration(milliseconds: 300),
+          )..forward(),
+        );
+      } else if (m.type == "audio") {
+        // Si el mensaje es de tipo audio
+        return ChatMessage(
+          audioUrl: m.fileUrl, // URL del archivo de audio
+          uid: m.from,
+          animationController: AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 300),
+          )..forward(),
+        );
+      } else if (m.type == "image") {
+        // Si el mensaje es de tipo imagen
+        return ChatMessage(
+          imageUrl: m.fileUrl, // URL de la imagen
+          uid: m.from,
+          animationController: AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 300),
+          )..forward(),
+        );
+      } else if (m.type == "video") {
+        // Si el mensaje es de tipo video
+        return ChatMessage(
+          videoUrl: m.fileUrl, // URL del archivo de video
+          uid: m.from,
+          animationController: AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 300),
+          )..forward(),
+        );
+      } else {
+        // Tipo no soportado, muestra un mensaje genérico
+        return ChatMessage(
+          message: "Mensaje no soportado",
+          uid: m.from,
+          animationController: AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 300),
+          )..forward(),
+        );
+      }
+    }).toList();
 
+    // Verificar si el widget sigue montado
     if (!mounted) return;
 
+    // Actualizar la lista de mensajes en el estado
     setState(() => _messages.insertAll(0, history));
   }
 
+
   void _escucharMensaje(dynamic payload) {
-    ChatMessage message = ChatMessage(
-      message: payload['message'],
-      uid: payload['from'],
-      animationController: AnimationController(
-          vsync: this, duration: const Duration(milliseconds: 300)),
-    );
+    final type = payload['type']; // Determinar el tipo de mensaje
+    final fileUrl = payload['fileUrl'];
+
+    ChatMessage message;
+
+    if (type == 'text') {
+      message = ChatMessage(
+        message: payload['message'],
+        uid: payload['from'],
+        animationController: AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        ),
+      );
+    } else if (type == 'audio') {
+      message = ChatMessage(
+        audioUrl: fileUrl,
+        uid: payload['from'],
+        animationController: AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        ),
+      );
+    } else if (type == 'image') {
+      message = ChatMessage(
+        imageUrl: fileUrl,
+        uid: payload['from'],
+        animationController: AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        ),
+      );
+    } else if (type == 'video') {
+      message = ChatMessage(
+        videoUrl: fileUrl,
+        uid: payload['from'],
+        animationController: AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        ),
+      );
+    } else {
+      message = ChatMessage(
+        message: "Mensaje no soportado",
+        uid: payload['from'],
+        animationController: AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        ),
+      );
+    }
 
     setState(() => _messages.insert(0, message));
     message.animationController.forward();
   }
+
 
   @override
   void dispose() {

@@ -1,22 +1,22 @@
 import 'dart:convert';
 
-MensajesResponse mensajesResponseFromJson(String str) =>
-    MensajesResponse.fromJson(json.decode(str));
+MessagesResponse mensajesResponseFromJson(String str) =>
+    MessagesResponse.fromJson(json.decode(str));
 
-String mensajesResponseToJson(MensajesResponse data) =>
+String messagesResponseToJson(MessagesResponse data) =>
     json.encode(data.toJson());
 
-class MensajesResponse {
+class MessagesResponse {
   final bool ok;
   final List<Message> messages;
 
-  MensajesResponse({
+  MessagesResponse({
     required this.ok,
     required this.messages,
   });
 
-  factory MensajesResponse.fromJson(Map<String, dynamic> json) =>
-      MensajesResponse(
+  factory MessagesResponse.fromJson(Map<String, dynamic> json) =>
+      MessagesResponse(
         ok: json["ok"],
         messages: List<Message>.from(
             json["messages"].map((x) => Message.fromJson(x))),
@@ -31,14 +31,18 @@ class MensajesResponse {
 class Message {
   final String from;
   final String to;
-  final String message;
+  final String type;
+  final String? fileUrl;
+  final String? message;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   Message({
     required this.from,
     required this.to,
-    required this.message,
+    required this.type,
+    this.fileUrl,
+    this.message,
     
     required this.createdAt,
     required this.updatedAt,
@@ -47,6 +51,8 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         from: json["from"],
         to: json["to"],
+        type: json["type"],
+        fileUrl: json["fileUrl"],
         message: json["message"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
@@ -55,6 +61,8 @@ class Message {
   Map<String, dynamic> toJson() => {
         "from": from,
         "to": to,
+        "type": type,
+        "fileUrl": fileUrl,
         "message": message,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
