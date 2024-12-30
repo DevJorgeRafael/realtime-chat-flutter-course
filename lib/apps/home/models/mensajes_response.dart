@@ -39,6 +39,7 @@ class Message {
     required this.from,
     required this.to,
     required this.message,
+    
     required this.createdAt,
     required this.updatedAt,
   });

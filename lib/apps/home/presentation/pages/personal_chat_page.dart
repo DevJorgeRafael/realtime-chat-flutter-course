@@ -22,6 +22,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   final _focusNode = FocusNode();
   final List<ChatMessage> _messages = [];
   bool _estaEscribiendo = false;
+  bool isRecording = false;
 
   late ChatService chatService;
   late SocketService socketService;
@@ -120,9 +121,20 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   Widget _buildActionIcons() {
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.mic, color: Colors.grey),
-          onPressed: () => handleAudioAction(),
+        GestureDetector(
+          onLongPress: () async {
+            setState(() => isRecording = true);
+            await handleAudioStart(context);
+          },
+          onLongPressUp: () async {
+            setState(() => isRecording = false);
+            await handleAudioStop(context);
+          },
+          child: Icon(
+            Icons.mic, 
+            color: isRecording? Colors.red : Colors.grey,
+            size: isRecording? 36: 24,
+            ),
         ),
         IconButton(
           icon: const Icon(Icons.photo, color: Colors.grey),

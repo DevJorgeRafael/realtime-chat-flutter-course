@@ -1,17 +1,24 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:realtime_chat/apps/home/helpers/sound_helpers.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/media_picker_page.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
 import 'package:realtime_chat/shared/utils/permissions_util.dart';
 
-Future<void> handleAudioAction() async {
-  // Lógica para grabar audio
+Future<void> handleAudioStart(BuildContext context) async {
   final hasPermission = await PermissionsUtil.requestMicrophonePermission();
   if (hasPermission) {
-    
+    await startRecording();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Microphone permission denied')),
+    );
   }
+}
+
+Future<void> handleAudioStop(BuildContext context) async {
+  await stopRecording();
 }
 
 Future<void> handleGalleryAction(BuildContext context) async {
