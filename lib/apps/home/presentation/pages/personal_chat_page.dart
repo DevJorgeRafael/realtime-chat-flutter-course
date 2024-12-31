@@ -73,8 +73,23 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       children: [
         const Icon(Icons.account_circle, color: Colors.white, size: 42,),
         const SizedBox(width: 3),
-        Text(usuarioPara.name,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(usuarioPara.name, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+            usuarioPara.online 
+            ? const Row(children: [
+                Icon(Icons.circle, color: Colors.green, size: 12),
+                SizedBox(width: 3), 
+                Text('En línea', style: TextStyle(color: Colors.white, fontSize: 12))
+              ],)
+            : const Row(children: [
+              Icon(Icons.circle, color: Colors.grey, size: 12,), 
+              SizedBox(width: 3),
+              Text('Desconectado', style: TextStyle(color: Colors.white, fontSize: 12))
+            ])
+          ],
+        ),
         const Spacer(),
         const Icon(Icons.call, color: Colors.white, size: 24),
       ],
@@ -155,7 +170,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
         ),
         IconButton(
           icon: const Icon(Icons.photo, color: Colors.grey),
-          onPressed: () => handleGalleryAction(context),
+          onPressed: () => handleGalleryAction(context, _insertMediaMessage),
         ),
         IconButton(
           icon: const Icon(Icons.photo_camera, color: Colors.grey),
@@ -170,6 +185,26 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       ],
     );
   }
+
+  void _insertMediaMessage(String mediaPath) {
+    final isImage = mediaPath.endsWith('.jpg') ||
+        mediaPath.endsWith('.jpeg') ||
+        mediaPath.endsWith('.png');
+    final isVideo = mediaPath.endsWith('.mp4') || mediaPath.endsWith('.mov');
+
+    final newMessage = ChatMessage(
+      uid: authService.user.id,
+      imageUrl: isImage ? mediaPath : null,
+      videoUrl: isVideo ? mediaPath : null,
+      animationController: AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+      )..forward(),
+    );
+
+    setState(() => _messages.insert(0, newMessage));
+  }
+
 
   void _insertImageMessage(String imagePath) {
     final newMessage = ChatMessage(
