@@ -136,38 +136,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   Widget _buildActionIcons() {
     return Row(
       children: [
-        GestureDetector(
-          onLongPress: () async {
-            setState(() => isRecording = true);
-            await handleAudioStart(context);
-          },
-          onLongPressUp: () async {
-            setState(() => isRecording = false);
-            final audioPath = await handleAudioStop(context);
-
-            if (audioPath != null) {
-              final newMessage = ChatMessage(
-                audioUrl: audioPath, // Ruta del archivo de audio
-                uid: authService.user.id,
-                animationController: AnimationController(
-                  vsync: this,
-                  duration: const Duration(milliseconds: 200),
-                ),
-              );
-
-              setState(() {
-                _messages.insert(0, newMessage);
-              });
-
-              newMessage.animationController.forward();
-            }
-          },
-          child: Icon(
-            Icons.mic,
-            color: isRecording ? Colors.red : Colors.grey,
-            size: isRecording ? 48 : 24,
-          ),
-        ),
         IconButton(
           icon: const Icon(Icons.photo, color: Colors.grey),
           onPressed: () => handleGalleryAction(context, _insertMediaMessage),
@@ -276,16 +244,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
             duration: const Duration(milliseconds: 300),
           )..forward(),
         );
-      } else if (m.type == "audio") {
-        // Si el mensaje es de tipo audio
-        return ChatMessage(
-          audioUrl: m.fileUrl, // URL del archivo de audio
-          uid: m.from,
-          animationController: AnimationController(
-            vsync: this,
-            duration: const Duration(milliseconds: 300),
-          )..forward(),
-        );
       } else if (m.type == "image") {
         // Si el mensaje es de tipo imagen
         return ChatMessage(
@@ -342,15 +300,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
           duration: const Duration(milliseconds: 300),
         ),
       );
-    } else if (type == 'audio') {
-      message = ChatMessage(
-        audioUrl: fileUrl,
-        uid: payload['from'],
-        animationController: AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 300),
-        ),
-      );
     } else if (type == 'image') {
       message = ChatMessage(
         imageUrl: fileUrl,
@@ -383,7 +332,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
     setState(() => _messages.insert(0, message));
     message.animationController.forward();
   }
-
 
   @override
   void dispose() {
