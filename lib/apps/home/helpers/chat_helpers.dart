@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:realtime_chat/apps/home/helpers/sound_helpers.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/media_picker_page.dart';
+import 'package:realtime_chat/apps/home/presentation/pages/photo_preview_page.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
 import 'package:realtime_chat/shared/utils/permissions_util.dart';
@@ -37,16 +38,24 @@ Future<void> handleGalleryAction(BuildContext context) async {
   }
 }
 
-Future<void> handleCameraAction(BuildContext context) async {
+Future<void> handleCameraAction(BuildContext context, void Function(String) insertImageCallBack) async {
   final hasPermission = await PermissionsUtil.requestCameraPermission();
   if (hasPermission) {
     final ImagePicker picker = ImagePicker();
     final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+
     if (photo != null) {
-      await FileManager.saveFile(photo.path, 'Images');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image captured: ${photo.path}')),
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PhotoPreviewPage(
+          photoPath: photo.path,
+          onSend: insertImageCallBack
+        )),
       );
+
+      if(result == true) {
+        await FileManager.saveFile(photo.path, 'Images');
+      }
     }
   }
 }

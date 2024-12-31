@@ -159,7 +159,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
         ),
         IconButton(
           icon: const Icon(Icons.photo_camera, color: Colors.grey),
-          onPressed: () => handleCameraAction(context),
+          onPressed: () => handleCameraAction(context, _insertImageMessage),
         ),
         IconButton(
           icon: const Icon(Icons.attach_file, color: Colors.grey),
@@ -169,6 +169,19 @@ class _PersonalChatPageState extends State<PersonalChatPage>
         ),
       ],
     );
+  }
+
+  void _insertImageMessage(String imagePath) {
+    final newMessage = ChatMessage(
+      uid: authService.user.id,
+      imageUrl: imagePath,
+      animationController: AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+      )..forward(),
+    );
+
+    setState(() => _messages.insert(0, newMessage));
   }
 
   void _insertFileMessage(String filePath, String fileName) {
@@ -184,8 +197,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
 
     setState(() => _messages.insert(0, newMessage));
   }
-
-
 
 
   void _handleSubmit(String texto) {

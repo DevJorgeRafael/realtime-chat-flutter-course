@@ -23,7 +23,7 @@ Future<void> startRecording() async {
   try {
     await _recorder!.startRecorder(
       toFile: path,
-      codec: Codec.aacADTS,
+      codec: Codec.aacMP4,
     );
     print('Recording to: $path');
     _recordingDuration = Duration.zero;
@@ -37,17 +37,19 @@ Future<void> startRecording() async {
   }
 }
 
-Future<void> stopRecording() async {
+Future<String?> stopRecording() async {
   if (_recorder == null || !_recorder!.isRecording) {
     print('Recorder is not initialized');
-    return;
+    return null;
   }
 
   try {
     final path = await _recorder!.stopRecorder();
     print('Recording stopped. File saved at: $path');
+    return path;
   } catch (e) {
     print('Error stopping recorder: $e');
+    return null;
   }
 }
 

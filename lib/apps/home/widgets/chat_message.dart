@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/injection_container.dart';
@@ -101,10 +103,19 @@ class ChatMessage extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            imageUrl!,
-            fit: BoxFit.cover,
-          ),
+          child: imageUrl != null &&
+                  (imageUrl!.startsWith('/') || imageUrl!.startsWith('file://'))
+              ? Image.file(
+                  File(imageUrl!),
+                  fit: BoxFit.cover,
+                )
+              : Image.network(
+                  imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.broken_image, color: Colors.red);
+                  },
+                ),
         ),
       ),
     );
