@@ -10,80 +10,30 @@ import 'package:realtime_chat/shared/utils/permissions_util.dart';
 
 import 'package:photo_manager/photo_manager.dart';
 
-Future<void> handleGalleryAction(
-    BuildContext context, Function(String) onMediaSelected) async {
-  final permission = await PermissionsUtil.requestStoragePermission(context);
+Future<void> handleGalleryAction(Function(String) onMediaSelected) async {
+  // final hasPermission = await PermissionsUtil.requestStoragePermission();
+  // if (!hasPermission) {
+  //   print('Permiso de almacenamiento denegado');
+  //   return;
+  // }
 
-  if (!permission) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Storage permission denied')),
-    );
-    return;
-  }
-
-  // Mostrar opciones para seleccionar imágenes o videos
   final picker = ImagePicker();
 
   // Seleccionar imagen o video
-  final XFile? pickedFile = await showModalBottomSheet<XFile?>(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        height: 160,
-        color: Colors.white,
-        child: Column(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Select Photo'),
-              onTap: () async {
-                final image =
-                    await picker.pickImage(source: ImageSource.gallery);
-                Navigator.pop(context, image);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.videocam),
-              title: const Text('Select Video'),
-              onTap: () async {
-                final video =
-                    await picker.pickVideo(source: ImageSource.gallery);
-                Navigator.pop(context, video);
-              },
-            ),
-          ],
-        ),
-      );
-    },
+  final XFile? pickedFile = await picker.pickMedia(
+    imageQuality: 85,
+    requestFullMetadata: true, // Obtener detalles adicionales
   );
 
-  // Procesar archivo seleccionado
-  if (pickedFile != null) {
-    final isImage = pickedFile.path.endsWith('.jpg') ||
-        pickedFile.path.endsWith('.jpeg') ||
-        pickedFile.path.endsWith('.png');
-    final isVideo =
-        pickedFile.path.endsWith('.mp4') || pickedFile.path.endsWith('.mov');
-
-    if (isImage || isVideo) {
-      // Insertar como mensaje y permitir previsualización
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => isImage
-              ? CameraViewPage(
-                  path: pickedFile.path) // Previsualización de imagen
-              : VideoViewPage(
-                  path: pickedFile.path), // Previsualización de video
-        ),
-      ).then((result) {
-        if (result == true) {
-          onMediaSelected(pickedFile.path);
-        }
-      });
-    }
+  if (pickedFile == null) {
+    print('No seleccionó ningún archivo');
+    return;
   }
+
+  print('Archivo seleccionado: ${pickedFile.path}');
+  onMediaSelected(pickedFile.path); // Inserción en los mensajes
 }
+
 
 
 Future<void> handleCameraAction(
@@ -91,7 +41,7 @@ Future<void> handleCameraAction(
   final hasPermission = await PermissionsUtil.requestCameraPermission();
   if (hasPermission) {
     final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+    final XFile? photo = await picker.pickMedia(imageQuality: 85);
 
     if (photo != null) {
       final result = await Navigator.push(
