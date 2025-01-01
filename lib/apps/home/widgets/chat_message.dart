@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/apps/home/widgets/video_player_widget.dart';
 import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/abrir_enlace_util.dart';
@@ -47,8 +48,6 @@ class ChatMessage extends StatelessWidget {
   Widget _buildMessage(BuildContext context, bool isMine, String? fileName, String? filePath) {
     if (imageUrl != null) {
       return _buildImageMessage(context, isMine);
-    } else if (audioUrl != null) {
-      return _buildAudioMessage(context, isMine);
     } else if (videoUrl != null) {
       return _buildVideoMessage(context, isMine);
     } else if(filePath != null && fileName != null) {
@@ -121,36 +120,7 @@ class ChatMessage extends StatelessWidget {
     );
   }
 
-  Widget _buildAudioMessage(BuildContext context, bool isMine) {
-    return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(
-          bottom: 5,
-          left: isMine ? 50 : 5,
-          right: isMine ? 5 : 50,
-        ),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isMine ? Colors.red.shade400 : const Color(0xffE4E5E8),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.play_arrow, color: Colors.white),
-            const SizedBox(width: 8),
-            Text(
-              "Audio",
-              style: TextStyle(color: isMine ? Colors.white : Colors.black87),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVideoMessage(BuildContext context, bool isMine) {
+Widget _buildVideoMessage(BuildContext context, bool isMine) {
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -161,16 +131,7 @@ class ChatMessage extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Container(
-            color: Colors.black,
-            height: 150,
-            child: Center(
-              child: Text(
-                "Video Message",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
+          child: VideoPlayerWidget(videoUrl: videoUrl!),
         ),
       ),
     );
