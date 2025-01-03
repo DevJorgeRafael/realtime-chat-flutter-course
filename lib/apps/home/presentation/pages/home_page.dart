@@ -76,8 +76,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer<SocketService>(
       builder: (context, socketService, child) {
         return Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
             children: [
               DrawerHeader(
                 decoration: const BoxDecoration(
@@ -85,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.person, size: 60, color: Colors.white,),
+                    const Icon(Icons.person, size: 60, color: Colors.white),
                     const SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,9 +100,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Text(
                           usuario.email,
-                          style: const TextStyle(color: Colors.white,),
+                          style: const TextStyle(color: Colors.white),
                         ),
-                        // const SizedBox(height: 10),
                         Row(
                           children: [
                             Text(
@@ -118,10 +116,10 @@ class _HomePageState extends State<HomePage> {
                             const SizedBox(width: 8),
                             Icon(
                               Icons.circle,
-                              color:
-                                  socketService.serverStatus == ServerStatus.online
-                                      ? Colors.green[400]
-                                      : Colors.grey[300],
+                              color: socketService.serverStatus ==
+                                      ServerStatus.online
+                                  ? Colors.green[400]
+                                  : Colors.grey[300],
                               size: 14,
                             ),
                           ],
@@ -131,7 +129,9 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              const Spacer(),
+              Expanded(
+                child: Container(), // Este contenedor ocupa el espacio restante
+              ),
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Cerrar Sesión'),
@@ -141,10 +141,12 @@ class _HomePageState extends State<HomePage> {
                   context.go('/login');
                 },
               ),
+              const SizedBox(height: 10),
             ],
           ),
         );
       },
     );
   }
+
 }
