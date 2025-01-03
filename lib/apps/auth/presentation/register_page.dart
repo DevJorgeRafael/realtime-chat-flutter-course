@@ -29,7 +29,7 @@ class RegisterPage extends StatelessWidget {
 
                   _Form(),
 
-                  const Labels(ruta: 'login', titulo: 'Ingresa con tu cuenta', subtitulo: '¿Ya tienes una cuenta?',),
+                  const Labels(routePath: 'login', title: 'Ingresa con tu cuenta', subtitle: '¿Ya tienes una cuenta?',),
                   const Text('Términos y condiciones de uso',
                       style: TextStyle(fontWeight: FontWeight.w200))
                 ],
