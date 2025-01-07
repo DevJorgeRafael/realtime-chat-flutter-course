@@ -7,11 +7,13 @@ enum MediaType { image, video }
 class MediaPreviewPage extends StatefulWidget {
   final String filePath;
   final MediaType mediaType;
+  final Function(String) onSend;
 
   const MediaPreviewPage({
     super.key,
     required this.filePath,
     required this.mediaType,
+    required this.onSend,
   });
 
   @override
@@ -25,7 +27,7 @@ class _MediaPreviewPageState extends State<MediaPreviewPage> {
   void initState() {
     super.initState();
     if (widget.mediaType == MediaType.video) {
-      _videoController = VideoPlayerController.asset(widget.filePath)
+      _videoController = VideoPlayerController.file(File(widget.filePath))
         ..initialize().then((_) {
           setState(() {}); // Actualizar estado después de inicializar
         });
@@ -46,6 +48,15 @@ class _MediaPreviewPageState extends State<MediaPreviewPage> {
             ? "Preview Image"
             : "Preview Video"),
         backgroundColor: Colors.red,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () {
+              widget.onSend(widget.filePath); // Llamar al callback
+              Navigator.pop(context); // Cerrar la vista previa
+            },
+          ),
+        ],
       ),
       body: Center(
         child: widget.mediaType == MediaType.image
@@ -65,16 +76,7 @@ class _MediaPreviewPageState extends State<MediaPreviewPage> {
   }
 
   Widget _buildFloatingActionButton() {
-    if (widget.mediaType == MediaType.image) {
-      return FloatingActionButton(
-        backgroundColor: Colors.red,
-        onPressed: () {
-          Navigator.pop(
-              context, widget.filePath); // Devuelve la ruta al presionar enviar
-        },
-        child: const Icon(Icons.send),
-      );
-    } else if (widget.mediaType == MediaType.video) {
+    if (widget.mediaType == MediaType.video) {
       return FloatingActionButton(
         backgroundColor: Colors.red,
         onPressed: () {
