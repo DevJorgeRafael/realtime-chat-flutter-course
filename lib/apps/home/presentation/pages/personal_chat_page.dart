@@ -138,11 +138,11 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       children: [
         IconButton(
           icon: const Icon(Icons.image, color: Colors.grey),
-          onPressed: () => handleGalleryAction(context, _insertMediaMessage),
+          onPressed: () => handlePhotoAction(context, _insertImageMessage),
         ),
         IconButton(
           icon: const Icon(Icons.video_library, color: Colors.grey),
-          onPressed: () => handleGalleryAction(context, _insertMediaMessage),
+          onPressed: () => handleVideoAction(context, _insertVideoMessage),
         ),
         IconButton(
           icon: const Icon(Icons.photo_camera, color: Colors.grey),
@@ -158,16 +158,10 @@ class _PersonalChatPageState extends State<PersonalChatPage>
     );
   }
 
-  void _insertMediaMessage(String mediaPath) {
-    final isImage = mediaPath.endsWith('.jpg') ||
-        mediaPath.endsWith('.jpeg') ||
-        mediaPath.endsWith('.png');
-    final isVideo = mediaPath.endsWith('.mp4') || mediaPath.endsWith('.mov');
-
+  void _insertVideoMessage(String videoPath) {
     final newMessage = ChatMessage(
       uid: authService.user.id,
-      imageUrl: isImage ? mediaPath : null,
-      videoUrl: isVideo ? mediaPath : null,
+      videoUrl: videoPath,
       animationController: AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 300),
