@@ -18,18 +18,7 @@ class SplashPage extends StatelessWidget {
     });
 
     return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Red Social UTN',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Logo()
-          ]
-        ),
-      ),
+      body: Center( child:Logo() ),
     );
   }
 
