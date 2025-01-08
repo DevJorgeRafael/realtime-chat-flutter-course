@@ -119,7 +119,7 @@ class _PhotoPreviewPageState extends State<PhotoPreviewPage>
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         onPressed: () {
-          widget.onSend(widget.photoPath); // Envía la foto
+          widget.onSend(widget.photoPath);
           Navigator.pop(context, true);
         },
         child: const Icon(Icons.send, color: Colors.white),

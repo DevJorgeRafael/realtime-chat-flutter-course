@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/media_preview_page.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/camera_view_page.dart';
+import 'package:realtime_chat/apps/home/presentation/pages/photo_preview_page.dart';
 import 'package:realtime_chat/apps/home/presentation/pages/video_view_page.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
@@ -15,9 +15,8 @@ Future<void> handlePhotoAction(BuildContext context, Function(String) insertPhot
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MediaPreviewPage(
-            filePath: photo.path,
-            mediaType: MediaType.image,
+          builder: (context) => PhotoPreviewPage(
+            photoPath: photo.path,
             onSend: insertPhotoCallback,
           ),
         ),
@@ -40,9 +39,8 @@ Future<void> handleVideoAction(BuildContext context, Function(String) insertVide
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MediaPreviewPage(
-            filePath: video.path,
-            mediaType: MediaType.video,
+          builder: (context) => VideoViewPage(
+            videoPath: video.path,
             onSend: insertVideoCallback,
           ),
         ),
@@ -116,7 +114,10 @@ Future<void> handleCameraAction(
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VideoViewPage(path: video.path),
+          builder: (context) => VideoViewPage(
+            videoPath: video.path,
+            onSend: insertMediaCallback,
+            ),
         ),
       );
 

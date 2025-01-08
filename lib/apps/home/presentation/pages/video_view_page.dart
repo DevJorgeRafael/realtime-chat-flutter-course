@@ -1,12 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoViewPage extends StatefulWidget {
-  final String path;
+  final String videoPath;
+  final void Function(String) onSend;
 
-  const VideoViewPage({super.key, required this.path});
+  const VideoViewPage({
+    super.key,
+    required this.videoPath,
+    required this.onSend,
+  });
 
   @override
   _VideoViewPageState createState() => _VideoViewPageState();
@@ -18,7 +22,7 @@ class _VideoViewPageState extends State<VideoViewPage> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.path))
+    _controller = VideoPlayerController.file(File(widget.videoPath))
       ..initialize().then((_) {
         setState(() {}); // Refresca para mostrar el primer frame.
       });
@@ -35,27 +39,26 @@ class _VideoViewPageState extends State<VideoViewPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context, false),
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => Navigator.pop(context, false), // Descarta el video
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.crop),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () {
-              // Aquí puedes implementar la funcionalidad para recortar el video.
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Crop not implemented')),
+                const SnackBar(content: Text('Edit not implemented')),
               );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.crop, color: Colors.white),
             onPressed: () {
-              // Aquí puedes implementar la funcionalidad de edición.
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edit not implemented')),
+                const SnackBar(content: Text('Crop not implemented')),
               );
             },
           ),
@@ -65,49 +68,52 @@ class _VideoViewPageState extends State<VideoViewPage> {
         children: [
           Expanded(
             child: _controller.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+                ? Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.contain,
+                        child: SizedBox(
+                          width: _controller.value.size.width,
+                          height: _controller.value.size.height,
+                          child: VideoPlayer(_controller),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _controller.value.isPlaying
+                                ? _controller.pause()
+                                : _controller.play();
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 33,
+                          backgroundColor: Colors.black38,
+                          child: Icon(
+                            _controller.value.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                 : const Center(
                     child: CircularProgressIndicator(),
                   ),
           ),
-          Container(
-            color: Colors.black,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context, false),
-                  icon: const Icon(Icons.close),
-                  label: const Text('Discard'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context, true),
-                  icon: const Icon(Icons.send),
-                  label: const Text('Send'),
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: () {
-          setState(() {
-            _controller.value.isPlaying
-                ? _controller.pause()
-                : _controller.play();
-          });
+          widget.onSend(widget.videoPath);
+          Navigator.pop(context, true); // Envía el video
         },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
+        child: const Icon(Icons.send, color: Colors.white),
       ),
     );
   }
