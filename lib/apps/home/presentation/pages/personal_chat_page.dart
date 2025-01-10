@@ -137,11 +137,11 @@ class _PersonalChatPageState extends State<PersonalChatPage>
     return Row(
       children: [
         IconButton(
-          icon: const Icon(Icons.image, color: Colors.grey),
+          icon: const Icon(Icons.photo, color: Colors.grey),
           onPressed: () => handlePhotoAction(context, _insertImageMessage),
         ),
         IconButton(
-          icon: const Icon(Icons.video_library, color: Colors.grey),
+          icon: const Icon(Icons.ondemand_video, color: Colors.grey),
           onPressed: () => handleVideoAction(context, _insertVideoMessage),
         ),
         IconButton(
