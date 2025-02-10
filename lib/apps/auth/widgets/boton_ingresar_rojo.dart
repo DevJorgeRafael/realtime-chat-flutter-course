@@ -20,7 +20,7 @@ class BotonIngresarRojo extends StatelessWidget {
         backgroundColor: Colors.red
       ),
       onPressed: onPressed, 
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         height: 55,
         child: Center(

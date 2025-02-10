@@ -22,7 +22,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   final _focusNode = FocusNode();
   final List<ChatMessage> _messages = [];
   bool _estaEscribiendo = false;
-  bool isRecording = false;
 
   late ChatService chatService;
   late SocketService socketService;
@@ -141,7 +140,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
           onPressed: () => handlePhotoAction(context, _insertImageMessage),
         ),
         IconButton(
-          icon: const Icon(Icons.ondemand_video, color: Colors.grey),
+          icon: const Icon(Icons.video_chat, color: Colors.grey),
           onPressed: () => handleVideoAction(context, _insertVideoMessage),
         ),
         IconButton(
