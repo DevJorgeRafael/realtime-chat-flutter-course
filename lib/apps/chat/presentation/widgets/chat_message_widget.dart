@@ -19,7 +19,6 @@ class ChatMessageWidget extends StatefulWidget {
 }
 
 class _ChatMessageWidgetState extends State<ChatMessageWidget> {
-  String? _localFilePath;
   bool _isLoading = true;
 
   @override
@@ -34,12 +33,10 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
       return;
     }
 
-    final filePath = widget
-        .message.fileUrl; // Ya debería estar descargada en `_cargarHistorial()`
+    final filePath = widget.message.fileUrl; 
 
     if (filePath != null && File(filePath).existsSync()) {
       setState(() {
-        _localFilePath = filePath;
         _isLoading = false;
       });
     } else {
@@ -124,9 +121,8 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
     }
 
     return const Icon(Icons.broken_image,
-        color: Colors.grey); // 🔹 Si la imagen no existe, muestra un icono
+        color: Colors.grey);
   }
-
 
 
   Widget _buildVideoMessage() {
@@ -138,7 +134,19 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
 
   Widget _buildFileMessage() {
     return GestureDetector(
-      onTap: () => FileManager.openFile(_localFilePath ?? ""),
+      onTap: () async {
+        final filePath = widget.message.fileUrl; 
+        if (filePath != null && filePath.isNotEmpty) {
+
+          if (await File(filePath).exists()) {
+            await FileManager.openFile(filePath);
+          } else {
+            print('El archivo no existe en la ruta: $filePath');
+          }
+        } else {
+          print('No se puede abrir el archivo: Ruta vacía o nula.');
+        }
+      },
       child: Row(
         children: [
           const Icon(Icons.insert_drive_file, color: Colors.blue),

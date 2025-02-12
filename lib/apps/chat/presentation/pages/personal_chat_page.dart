@@ -110,9 +110,6 @@ class _PersonalChatPageState extends State<PersonalChatPage>
     }
   }
 
-
-
-
   void _handleSubmit(String texto) {
     if (texto.isEmpty) return;
 

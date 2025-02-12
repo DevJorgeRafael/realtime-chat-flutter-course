@@ -58,29 +58,33 @@ class FileManager {
   }
 
 
-
-
-  /// Guarda un archivo en la carpeta correspondiente según el tipo.
-  static Future<void> saveFile(String filePath, String fileType) async {
+  static Future<String?> saveFile(String filePath, String fileType) async {
     try {
       final basePath = await getBaseDirectory();
       final destinationPath = '$basePath/$fileType';
       final file = File(filePath);
       final fileName = file.uri.pathSegments.last;
+      final finalPath = '$destinationPath/$fileName';
 
-      // Verifica si las carpetas existen antes de copiar
+      // Verificar si la carpeta existe antes de copiar el archivo
       final dir = Directory(destinationPath);
-      if(!await dir.exists()) {
-        print('Destination folder dows not exist. Creating: $destinationPath');
+      if (!await dir.exists()) {
+        print('📁 Creando directorio: $destinationPath');
         await dir.create(recursive: true);
       }
 
-      await file.copy('$destinationPath/$fileName');
-      print('File saved: $filePath -> $destinationPath/$fileName');
-    } catch(e) {
-      print('Error saving file: $e');
+      // Copiar archivo al destino
+      await file.copy(finalPath);
+      print('✅ Archivo guardado en: $finalPath');
+      return finalPath;
+    } catch (e) {
+      print('❌ Error al guardar el archivo: $e');
+      return null;
     }
   }
+
+
+
 
   /// Lista los archivos de una carpeta específica.
   static Future<List<FileSystemEntity>> listFiles(String fileType) async {
@@ -92,13 +96,28 @@ class FileManager {
 
   /// Abre un archivo utilizando la herramienta predeterminada del sistema.
   static Future<void> openFile(String filePath) async {
+    if (filePath.isEmpty) {
+      print('❌ Error: El archivo no tiene una ruta válida.');
+      return;
+    }
+
+    final file = File(filePath);
+    if (!await file.exists()) {
+      print('❌ Error: El archivo no existe en la ruta: $filePath');
+      return;
+    }
+
     try {
       final result = await OpenFile.open(filePath);
       if (result.type != ResultType.done) {
-        print('Error opening file: ${result.message}');
+        print('❌ Error al abrir el archivo: ${result.message}');
+      } else {
+        print('✅ Archivo abierto correctamente: $filePath');
       }
-    } catch(e) {
-      print('Error opening file: $e');
+    } catch (e) {
+      print('❌ Error inesperado al abrir el archivo: $e');
     }
-  } 
+  }
+
+
 }

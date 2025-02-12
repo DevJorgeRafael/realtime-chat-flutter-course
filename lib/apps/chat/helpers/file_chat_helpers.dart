@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:realtime_chat/apps/chat/presentation/pages/camera_view_page.dart';
@@ -5,7 +6,7 @@ import 'package:realtime_chat/apps/chat/presentation/pages/photo_preview_page.da
 import 'package:realtime_chat/apps/chat/presentation/pages/video_view_page.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
-// import 'package:realtime_chat/shared/utils/permissions_util.dart';
+
 
 Future<String?> handlePhotoAction(BuildContext context) async {
   final ImagePicker picker = ImagePicker();
@@ -129,31 +130,26 @@ Future<String?> handleCameraAction(BuildContext context) async {
 
 
 Future<String?> handleAttachFileAction(BuildContext context) async {
-  // Lógica para adjuntar archivos
   final result = await FileSelector.pickFile(allowedExtensions: [
-    'pdf',
-    'docx',
-    'txt',
-    'xslm',
-    'zip',
-    'rar',
-    'html',
-    'css',
-    'js',
-    'ts'
+    'pdf', 'docx', 'txt', 'xlsx', 'zip', 'rar', 'html', 'css', 'js', 'ts'
   ]);
 
-  if (result != null) {
-    final filePath = result.files.single.path!;
-    final fileName = result.files.single.name;
+  if (result != null && result.files.isNotEmpty) {
+    final PlatformFile file = result.files.single;
 
-    await FileManager.saveFile(filePath, 'Documents');
-    return filePath;
-  } 
-  
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('No se seleccionón ningún archivo')),
-  );
-  
+    if (file.path == null) {
+      return null;
+    }
+
+    final XFile xfile = XFile(file.path!);
+
+    final fileType = "Documents"; 
+    final savedPath = await FileManager.saveFile(xfile.path, fileType);
+    
+    if (savedPath != null) {
+      return savedPath;
+    }
+  }
+
   return null;
 }
