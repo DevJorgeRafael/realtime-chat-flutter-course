@@ -44,31 +44,60 @@ class _ChatInputFieldState extends State<ChatInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _textController,
-              onChanged: (text) =>
-                  setState(() => _isTyping = text.trim().isNotEmpty),
-              decoration: const InputDecoration.collapsed(
-                  hintText: 'Escribe un mensaje...'),
-              focusNode: _focusNode,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      onChanged: (text) {
+                        setState(() => _isTyping = text.trim().isNotEmpty);
+                      },
+                      decoration: const InputDecoration(
+                        hintText: "Escribe un mensaje...",
+                        border: InputBorder.none,
+                      ),
+                      focusNode: _focusNode,
+                    ),
+                  ),
+                  if (!_isTyping)
+                    _buildActionIcons(), // Ocultar iconos al escribir
+                ],
+              ),
             ),
           ),
-          _isTyping ? _buildSendButton() : _buildActionIcons(),
+          const SizedBox(width: 10),
+          if (_isTyping)
+            _buildSendButton(), // Mostrar botón de enviar solo al escribir
         ],
       ),
     );
   }
 
   Widget _buildSendButton() {
-    return IconButton(
-      icon: const Icon(Icons.send, color: Colors.red),
+    return FloatingActionButton(
       onPressed: () =>
           _isTyping ? _sendMessage(_textController.text.trim()) : null,
+      mini: true,
+      backgroundColor: Colors.red,
+      elevation: 2,
+      child: const Icon(Icons.send, color: Colors.white),
     );
   }
 
@@ -80,7 +109,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
           onPressed: () => _handleMediaSelection(context, "image"),
         ),
         IconButton(
-          icon: const Icon(Icons.video_chat, color: Colors.grey),
+          icon: const Icon(Icons.video_camera_back, color: Colors.grey),
           onPressed: () => _handleMediaSelection(context, "video"),
         ),
         IconButton(
@@ -95,15 +124,17 @@ class _ChatInputFieldState extends State<ChatInputField> {
     );
   }
 
+
+
   void _sendMessage(String text) {
     if (text.isEmpty) return;
 
     _textController.clear();
     _focusNode.requestFocus();
 
-    widget.onSendMessage(text); // ✅ Se inserta el mensaje en la UI
+    widget.onSendMessage(text); 
 
-    // 🔥 Solo enviar los mensajes de texto al backend
+    // Solo enviar los mensajes de texto al backend
     socketService.emit('mensaje-personal', {
       'from': authService.user.id,
       'to': chatService.userReceiver.id,
@@ -139,13 +170,13 @@ class _ChatInputFieldState extends State<ChatInputField> {
       InsertMessageHelper.insertFileMessage(
         filePath: filePath,
         fileName: fileName,
-        fileType: type, // ✅ Usa el tipo correcto (image, video, file)
+        fileType: type, 
         userId: authService.user.id,
         receiverId: chatService.userReceiver.id,
-        messages: widget.messages, // ✅ Se pasa la lista de mensajes
-        vsync: widget.vsync, // ✅ Se usa `vsync` desde `PersonalChatPage`
+        messages: widget.messages,
+        vsync: widget.vsync, 
         updateMessages:
-            widget.updateMessages, // ✅ Se usa la función de actualización
+            widget.updateMessages,
       );
 
     }

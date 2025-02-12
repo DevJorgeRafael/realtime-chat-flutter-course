@@ -102,8 +102,6 @@ class Message {
     return null;
   }
 
-
-
   Map<String, dynamic> toJson() => {
         "from": from,
         "to": to,
