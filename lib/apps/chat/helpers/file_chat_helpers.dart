@@ -7,53 +7,52 @@ import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
 // import 'package:realtime_chat/shared/utils/permissions_util.dart';
 
-Future<void> handlePhotoAction(BuildContext context, Function(String) insertPhotoCallback) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(source: ImageSource.gallery);
+Future<String?> handlePhotoAction(BuildContext context) async {
+  final ImagePicker picker = ImagePicker();
+  final XFile? photo = await picker.pickImage(source: ImageSource.gallery);
 
-    if (photo != null) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PhotoPreviewPage(
-            photoPath: photo.path,
-            onSend: insertPhotoCallback,
-          ),
-        ),
-      );
-
-      if (result == true) {
-        await FileManager.saveFile(photo.path, 'Images');
-      }
-    }
-}
-
-Future<void> handleVideoAction(BuildContext context, Function(String) insertVideoCallback) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? video = await picker.pickVideo(
-      source: ImageSource.gallery,
-      maxDuration: const Duration(minutes: 5),
+  if (photo != null) {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoPreviewPage(photoPath: photo.path),
+      ),
     );
 
-    if (video != null) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoViewPage(
-            videoPath: video.path,
-            onSend: insertVideoCallback,
-          ),
-        ),
-      );
-
-      if (result == true) {
-        await FileManager.saveFile(video.path, 'Videos');
-      }
+    if (result == true) {
+      await FileManager.saveFile(photo.path, 'Images');
+      return photo.path;
     }
+  }
+  return null;
 }
 
-Future<void> handleCameraAction(
-    BuildContext context, void Function(String) insertMediaCallback) async {
+Future<String?> handleVideoAction(BuildContext context) async {
+  final ImagePicker picker = ImagePicker();
+  final XFile? video = await picker.pickVideo(
+    source: ImageSource.gallery,
+    maxDuration: const Duration(minutes: 5),
+  );
+
+  if (video != null) {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoViewPage(videoPath: video.path),
+      ),
+    );
+
+    if (result == true) {
+      await FileManager.saveFile(video.path, 'Videos');
+      return video.path;
+    }
+  }
+  return null;
+}
+
+
+
+Future<String?> handleCameraAction(BuildContext context) async {
   final ImagePicker picker = ImagePicker();
 
   // Mostrar opciones para capturar una foto o grabar un video.
@@ -68,13 +67,13 @@ Future<void> handleCameraAction(
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera, color: Colors.white),
-              title: const Text('Take Photo',
+              title: const Text('Tomar Foto',
                   style: TextStyle(color: Colors.white)),
               onTap: () => Navigator.pop(context, 'photo'),
             ),
             ListTile(
               leading: const Icon(Icons.videocam, color: Colors.white),
-              title: const Text('Record Video',
+              title: const Text('Grabar Video',
                   style: TextStyle(color: Colors.white)),
               onTap: () => Navigator.pop(context, 'video'),
             ),
@@ -92,7 +91,7 @@ Future<void> handleCameraAction(
     );
 
     if (photo != null) {
-      final result = await Navigator.push(
+      final result = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
           builder: (context) => CameraViewPage(path: photo.path),
@@ -100,7 +99,8 @@ Future<void> handleCameraAction(
       );
 
       if (result == true) {
-        insertMediaCallback(photo.path); // Enviar foto seleccionada
+        await FileManager.saveFile(photo.path, 'Images');
+        return photo.path; // ✅ Devuelve la ruta de la imagen
       }
     }
   } else if (action == 'video') {
@@ -111,25 +111,24 @@ Future<void> handleCameraAction(
     );
 
     if (video != null) {
-      final result = await Navigator.push(
+      final result = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (context) => VideoViewPage(
-            videoPath: video.path,
-            onSend: insertMediaCallback,
-            ),
+          builder: (context) => VideoViewPage(videoPath: video.path),
         ),
       );
 
       if (result == true) {
-        insertMediaCallback(video.path); // Enviar video seleccionado
+        await FileManager.saveFile(video.path, 'Videos');
+        return video.path; // ✅ Devuelve la ruta del video
       }
     }
   }
+  return null; // ❌ No se seleccionó nada
 }
 
-Future<void> handleAttachFileAction(
-    BuildContext context, Function onFileSelected) async {
+
+Future<String?> handleAttachFileAction(BuildContext context) async {
   // Lógica para adjuntar archivos
   final result = await FileSelector.pickFile(allowedExtensions: [
     'pdf',
@@ -149,11 +148,12 @@ Future<void> handleAttachFileAction(
     final fileName = result.files.single.name;
 
     await FileManager.saveFile(filePath, 'Documents');
-
-    onFileSelected(filePath, fileName);
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No file selected')),
-    );
-  }
+    return filePath;
+  } 
+  
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('No se seleccionón ningún archivo')),
+  );
+  
+  return null;
 }

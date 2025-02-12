@@ -89,9 +89,19 @@ class Message {
   }
 
   Future<String?> fetchFileIfNeeded() async {
-    if (isFileDownloaded || fileId == null) return fileUrl;
-    return await FileManager.downloadAndSaveImage(fileId!);
+    if (isFileDownloaded || fileId == null)
+      return fileUrl; // Si ya está descargado, usa la ruta local
+
+    String? localPath = await FileManager.downloadAndSaveImage(fileId!);
+
+    if (localPath != null) {
+      fileUrl = localPath; // ✅ Guarda la ruta local correctamente
+      return localPath;
+    }
+
+    return null;
   }
+
 
 
   Map<String, dynamic> toJson() => {

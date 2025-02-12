@@ -109,20 +109,24 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
       );
     }
 
-    if (_localFilePath != null && File(_localFilePath!).existsSync()) {
+    if (widget.message.fileUrl != null &&
+        File(widget.message.fileUrl!).existsSync()) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.file(File(_localFilePath!), fit: BoxFit.cover),
+        child: Image.file(
+          File(widget.message.fileUrl!),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(Icons.broken_image, color: Colors.grey);
+          },
+        ),
       );
     }
 
-    // Si aún no se ha descargado la imagen, intenta de nuevo
-    if (!_isLoading && widget.message.fileUrl == null) {
-      _loadImage();
-    }
-
-    return const Icon(Icons.broken_image, color: Colors.grey);
+    return const Icon(Icons.broken_image,
+        color: Colors.grey); // 🔹 Si la imagen no existe, muestra un icono
   }
+
 
 
   Widget _buildVideoMessage() {

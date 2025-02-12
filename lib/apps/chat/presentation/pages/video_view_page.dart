@@ -4,12 +4,10 @@ import 'package:video_player/video_player.dart';
 
 class VideoViewPage extends StatefulWidget {
   final String videoPath;
-  final void Function(String) onSend;
 
   const VideoViewPage({
     super.key,
     required this.videoPath,
-    required this.onSend,
   });
 
   @override
@@ -45,24 +43,6 @@ class _VideoViewPageState extends State<VideoViewPage> {
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context, false), // Descarta el video
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edit not implemented')),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.crop, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Crop not implemented')),
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -110,8 +90,7 @@ class _VideoViewPageState extends State<VideoViewPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         onPressed: () {
-          widget.onSend(widget.videoPath);
-          Navigator.pop(context, true); // Envía el video
+          Navigator.pop(context, true); // Confirmar envío del video
         },
         child: const Icon(Icons.send, color: Colors.white),
       ),

@@ -66,18 +66,12 @@ class _PersonalChatPageState extends State<PersonalChatPage>
           const Divider(height: 1),
           ChatInputField(
             onSendMessage: _handleSubmit,
-            onSendFile: (filePath) {
-              InsertMessageHelper.insertFileMessage(
-                filePath: filePath,
-                fileName: "Archivo",
-                userId: authService.user.id,
-                receiverId: chatService.userReceiver.id,
-                messages: _messages,
-                vsync: this,
-                updateMessages: _updateMessages,
-              );
-            },
+            messages: _messages, 
+            vsync: this, 
+            updateMessages:
+                _updateMessages,
           ),
+
         ],
       ),
     );
@@ -97,11 +91,9 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       if (message.type == "image" &&
           message.fileId != null &&
           !message.isFileDownloaded) {
-        String? filePath =
-            await message.fetchFileIfNeeded(); // 👈 Descarga aquí
+        String? filePath = await message.fetchFileIfNeeded();
         if (filePath != null) {
-          message.fileUrl =
-              filePath; // 👈 Guarda la ruta para evitar descargas repetidas
+          message.fileUrl = filePath; // ✅ Guarda la ruta local correctamente
         }
       }
 
@@ -117,6 +109,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
       });
     }
   }
+
 
 
 

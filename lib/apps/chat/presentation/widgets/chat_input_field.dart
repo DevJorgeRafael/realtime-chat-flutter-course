@@ -3,16 +3,22 @@ import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
 import 'package:realtime_chat/apps/chat/domain/socket_service.dart';
 import 'package:realtime_chat/apps/chat/helpers/file_chat_helpers.dart';
+import 'package:realtime_chat/apps/chat/helpers/insert_message_helpers.dart';
+import 'package:realtime_chat/apps/chat/presentation/widgets/chat_message_widget.dart';
 import 'package:realtime_chat/injection_container.dart';
 
 class ChatInputField extends StatefulWidget {
   final Function(String) onSendMessage;
-  final Function(String) onSendFile;
+  final List<ChatMessageWidget> messages; 
+  final TickerProvider vsync; 
+  final Function(List<ChatMessageWidget>) updateMessages; 
 
   const ChatInputField({
     super.key,
     required this.onSendMessage,
-    required this.onSendFile,
+    required this.messages,
+    required this.vsync,
+    required this.updateMessages,
   });
 
   @override
@@ -71,20 +77,19 @@ class _ChatInputFieldState extends State<ChatInputField> {
       children: [
         IconButton(
           icon: const Icon(Icons.photo, color: Colors.grey),
-          onPressed: () => handlePhotoAction(context, _sendFile),
+          onPressed: () => _handleMediaSelection(context, "image"),
         ),
         IconButton(
           icon: const Icon(Icons.video_chat, color: Colors.grey),
-          onPressed: () => handleVideoAction(context, _sendFile),
+          onPressed: () => _handleMediaSelection(context, "video"),
         ),
         IconButton(
           icon: const Icon(Icons.photo_camera, color: Colors.grey),
-          onPressed: () => handleCameraAction(context, _sendFile),
+          onPressed: () => _handleMediaSelection(context, "camera"),
         ),
         IconButton(
           icon: const Icon(Icons.attach_file, color: Colors.grey),
-          onPressed: () => handleAttachFileAction(
-              context, (filePath, _) => _sendFile(filePath)),
+          onPressed: () => _handleMediaSelection(context, "file"),
         ),
       ],
     );
@@ -96,14 +101,56 @@ class _ChatInputFieldState extends State<ChatInputField> {
     _textController.clear();
     _focusNode.requestFocus();
 
-    widget.onSendMessage(text);
+    widget.onSendMessage(text); // ✅ Se inserta el mensaje en la UI
+
+    // 🔥 Solo enviar los mensajes de texto al backend
+    socketService.emit('mensaje-personal', {
+      'from': authService.user.id,
+      'to': chatService.userReceiver.id,
+      'message': text,
+      'type': 'text',
+      'fileUrl': null,
+    });
 
     setState(() => _isTyping = false);
   }
 
-  void _sendFile(String filePath) {
-    widget.onSendFile(filePath);
+
+  Future<void> _handleMediaSelection(BuildContext context, String type) async {
+    String? filePath;
+    switch (type) {
+      case "image":
+        filePath = await handlePhotoAction(context);
+        break;
+      case "video":
+        filePath = await handleVideoAction(context);
+        break;
+      case "camera":
+        filePath = await handleCameraAction(context);
+        break;
+      case "file":
+        filePath = await handleAttachFileAction(context);
+        break;
+    }
+
+    if (filePath != null) {
+      final fileName = filePath.split('/').last;
+
+      InsertMessageHelper.insertFileMessage(
+        filePath: filePath,
+        fileName: fileName,
+        fileType: type, // ✅ Usa el tipo correcto (image, video, file)
+        userId: authService.user.id,
+        receiverId: chatService.userReceiver.id,
+        messages: widget.messages, // ✅ Se pasa la lista de mensajes
+        vsync: widget.vsync, // ✅ Se usa `vsync` desde `PersonalChatPage`
+        updateMessages:
+            widget.updateMessages, // ✅ Se usa la función de actualización
+      );
+
+    }
   }
+
 
   @override
   void dispose() {

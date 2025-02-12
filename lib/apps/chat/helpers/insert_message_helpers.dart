@@ -106,6 +106,7 @@ class InsertMessageHelper {
   static void insertFileMessage({
     required String filePath,
     required String fileName,
+    required String fileType, // ✅ Se añade el tipo de archivo
     required String userId,
     required String receiverId,
     required List<ChatMessageWidget> messages,
@@ -115,7 +116,7 @@ class InsertMessageHelper {
     final message = Message(
       from: userId,
       to: receiverId,
-      type: "file",
+      type: fileType, // ✅ Ahora se usa el tipo correcto (image, video, file)
       fileUrl: filePath,
       fileName: fileName,
       createdAt: DateTime.now(),
@@ -129,4 +130,5 @@ class InsertMessageHelper {
       updateMessages: updateMessages,
     );
   }
+
 }
