@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'package:realtime_chat/apps/home/domain/chat_service.dart';
-import 'package:realtime_chat/apps/home/domain/users_service.dart';
+import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
+import 'package:realtime_chat/apps/chat/domain/users_service.dart';
 import 'package:realtime_chat/helpers/navigation_helper.dart';
 import 'package:realtime_chat/injection_container.dart';
 
 import 'package:realtime_chat/shared/models/user.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/personal_chat_page.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/personal_chat_page.dart';
 
 class PersonalChatsView extends StatefulWidget {
   const PersonalChatsView({super.key});

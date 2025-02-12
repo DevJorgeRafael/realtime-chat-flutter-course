@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:realtime_chat/apps/home/domain/rooms_service.dart';
-import 'package:realtime_chat/apps/home/models/rooms_response.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/group_chat_page.dart';
+import 'package:realtime_chat/apps/chat/domain/rooms_service.dart';
+import 'package:realtime_chat/apps/chat/models/rooms_response.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/group_chat_page.dart';
 import 'package:realtime_chat/helpers/navigation_helper.dart';
 
 class GroupChatsView extends StatefulWidget {

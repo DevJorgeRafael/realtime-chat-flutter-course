@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
-import 'package:realtime_chat/apps/home/domain/socket_service.dart';
 import 'package:realtime_chat/apps/home/presentation/views/group_chats_view.dart';
 import 'package:realtime_chat/apps/home/presentation/views/personal_chats_view.dart';
-import 'package:realtime_chat/apps/home/widgets/custom_chat_bottom_navigation_bar.dart';
 import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/models/user.dart';
+import 'package:realtime_chat/apps/home/widgets/build_drawer_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,13 +13,35 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
+  late PageController _pageController;
 
-  void _onItemSelected(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _onNavBarTapped(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -31,122 +49,71 @@ class _HomePageState extends State<HomePage> {
     final authService = sl<AuthService>();
     final User usuario = authService.user;
 
-    final views = [
-      const PersonalChatsView(),
-      const GroupChatsView()
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 15),
+      appBar: _buildAppBar(),
+      drawer: buildDrawerWidget(usuario),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: const [
+          PersonalChatsView(),
+          GroupChatsView(),
         ],
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+      floatingActionButton:
+          _selectedIndex == 1 ? _buildFloatingActionButton() : null,
+    );
+  }
+
+  /// **🔹 AppBar con título dinámico y botón de búsqueda**
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text(_selectedIndex == 0 ? 'Chats' : 'Grupos'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            // Implementar búsqueda
+          },
         ),
-      drawer: _buildDrawer(usuario), 
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: views,
-      ),
-
-      bottomNavigationBar: CustomChatBottomNavigationBar(
-        selectedIndex: _selectedIndex, 
-        onItemSelected: _onItemSelected
-      ),
-      floatingActionButton: _selectedIndex == 0 ? _buildFloatingActionButton() : null,
+        const SizedBox(width: 15),
+      ],
     );
   }
 
-  // Función para construir el FAB dinámico
-  Widget? _buildFloatingActionButton() {
-      return FloatingActionButton(
-        onPressed: () {
-          // _onCreateGroup();
-        },
-        backgroundColor: Colors.red[400],
-        child: const Icon(Icons.group_add),
+  /// **🔹 Barra de navegación inferior**
+  Widget _buildBottomNavigationBar() {
+    return NavigationBar(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onNavBarTapped,
+      elevation: 5,
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.chat),
+          selectedIcon: Icon(Icons.chat, color: Colors.red),
+          label: 'Chats',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.group),
+          selectedIcon: Icon(Icons.group, color: Colors.red),
+          label: 'Grupos',
+        ),
+      ],
+      backgroundColor: Colors.white,
+      indicatorColor: Colors.red.withOpacity(0.1),
+      surfaceTintColor: Colors.white,
     );
   }
 
-  Widget _buildDrawer(User usuario) {
-    return Consumer<SocketService>(
-      builder: (context, socketService, child) {
-        return Drawer(
-          child: Column(
-            children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.person, size: 60, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          usuario.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          usuario.email,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              socketService.serverStatus == ServerStatus.online
-                                  ? 'Online'
-                                  : 'Offline',
-                              style: TextStyle(
-                                color: Colors.grey[300],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.circle,
-                              color: socketService.serverStatus ==
-                                      ServerStatus.online
-                                  ? Colors.green[400]
-                                  : Colors.grey[300],
-                              size: 14,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(), // Este contenedor ocupa el espacio restante
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Cerrar Sesión'),
-                onTap: () {
-                  socketService.disconnect();
-                  AuthService.logout();
-                  context.go('/login');
-                },
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
+  /// **🔹 Floating Action Button para Grupos**
+  Widget _buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        // Acción para crear grupo
       },
+      backgroundColor: Colors.red[400],
+      child: const Icon(Icons.group_add),
     );
   }
-
 }

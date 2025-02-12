@@ -1,4 +1,4 @@
-import 'package:realtime_chat/apps/home/models/rooms_response.dart';
+import 'package:realtime_chat/apps/chat/models/rooms_response.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
 import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 

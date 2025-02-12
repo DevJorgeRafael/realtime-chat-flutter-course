@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
-import 'package:realtime_chat/apps/home/domain/chat_service.dart';
-import 'package:realtime_chat/apps/home/domain/socket_service.dart';
-import 'package:realtime_chat/apps/home/domain/users_service.dart';
+import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
+import 'package:realtime_chat/apps/chat/domain/socket_service.dart';
+import 'package:realtime_chat/apps/chat/domain/users_service.dart';
 import 'package:realtime_chat/config/theme/app_theme.dart';
 import 'package:realtime_chat/shared/service/global_usuario_service.dart';
 

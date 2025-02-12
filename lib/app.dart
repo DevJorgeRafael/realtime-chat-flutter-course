@@ -4,7 +4,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
-import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
+import 'package:realtime_chat/apps/chat/domain/socket_service.dart';
 import 'package:realtime_chat/config/routes/app_router.dart';
 import 'package:realtime_chat/config/theme/app_theme.dart';
 import 'package:realtime_chat/injection_container.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => sl<AuthService>()),
         ChangeNotifierProvider(create: (_) => sl<SocketService>()),
+        ChangeNotifierProvider(create: (_) => sl<ChatService>()),
 
       ],
       child: MaterialApp.router(

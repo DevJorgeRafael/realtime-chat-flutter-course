@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/camera_view_page.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/photo_preview_page.dart';
-import 'package:realtime_chat/apps/home/presentation/pages/video_view_page.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/camera_view_page.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/photo_preview_page.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/video_view_page.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/file_selector.dart';
 // import 'package:realtime_chat/shared/utils/permissions_util.dart';

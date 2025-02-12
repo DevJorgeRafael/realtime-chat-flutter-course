@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/injection_container.dart';
 import 'package:realtime_chat/shared/service/global_usuario_service.dart';
-import 'package:realtime_chat/apps/home/domain/socket_service.dart';
+import 'package:realtime_chat/apps/chat/domain/socket_service.dart';
 import 'package:realtime_chat/shared/widgets/logo.dart';
 
 class SplashPage extends StatelessWidget {

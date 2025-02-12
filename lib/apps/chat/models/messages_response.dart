@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/injection_container.dart';
+import 'package:realtime_chat/shared/service/file_manager.dart';
 
 MessagesResponse mensajesResponseFromJson(String str) =>
     MessagesResponse.fromJson(json.decode(str));
@@ -32,8 +35,11 @@ class Message {
   final String from;
   final String to;
   final String type;
-  final String? fileUrl;
+  String? fileId; // ID del archivo en el backend
+  String? fileUrl; // Ruta local del archivo después de descargarlo
+  final String? fileName;
   final String? message;
+  final String? room;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -41,18 +47,40 @@ class Message {
     required this.from,
     required this.to,
     required this.type,
+    this.fileId,
     this.fileUrl,
+    this.fileName,
     this.message,
-    
+    this.room,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  bool get isMine {
+    final authService = sl<AuthService>();
+    return from == authService.user.id;
+  }
+
+  bool get isFileDownloaded {
+    return fileUrl != null && fileUrl!.isNotEmpty;
+  }
+
+  Future<void> downloadFileIfNeeded() async {
+    if (!isFileDownloaded && fileId != null) {
+      final localPath = await FileManager.downloadAndSaveImage(fileId!);
+      if (localPath != null) {
+        fileUrl = localPath;
+      }
+    }
+  }
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         from: json["from"],
         to: json["to"],
         type: json["type"],
-        fileUrl: json["fileUrl"],
+        fileId: json["fileId"], // Se obtiene el ID del archivo
+        fileUrl: json["fileUrl"], // Solo si ya viene en la respuesta
+        fileName: json["fileName"],
         message: json["message"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
@@ -62,7 +90,9 @@ class Message {
         "from": from,
         "to": to,
         "type": type,
+        "fileId": fileId,
         "fileUrl": fileUrl,
+        "fileName": fileName,
         "message": message,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
