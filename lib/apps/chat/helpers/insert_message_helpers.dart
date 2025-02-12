@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/chat/models/messages_response.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/chat_message_widget.dart';
+import 'package:realtime_chat/shared/service/file_manager.dart';
 
 class InsertMessageHelper {
   static void insertMessage({
@@ -80,12 +81,16 @@ class InsertMessageHelper {
     required List<ChatMessageWidget> messages,
     required TickerProvider vsync,
     required Function(List<ChatMessageWidget>) updateMessages,
-  }) {
+  }) async {
+    // Guarda la imagen en almacenamiento local
+    final savedPath =
+        await FileManager.downloadAndSaveImage(imagePath) ?? imagePath;
+
     final message = Message(
       from: userId,
       to: receiverId,
       type: "image",
-      fileUrl: imagePath,
+      fileUrl: savedPath,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );

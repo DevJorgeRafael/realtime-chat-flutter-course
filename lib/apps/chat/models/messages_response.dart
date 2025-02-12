@@ -74,17 +74,25 @@ class Message {
     }
   }
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-        from: json["from"],
-        to: json["to"],
-        type: json["type"],
-        fileId: json["fileId"], // Se obtiene el ID del archivo
-        fileUrl: json["fileUrl"], // Solo si ya viene en la respuesta
-        fileName: json["fileName"],
-        message: json["message"],
-        createdAt: DateTime.parse(json["createdAt"]),
-        updatedAt: DateTime.parse(json["updatedAt"]),
-      );
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      from: json["from"],
+      to: json["to"],
+      type: json["type"],
+      fileId: json["fileId"],
+      fileUrl: json["fileUrl"], // Solo si ya viene del backend
+      fileName: json["fileName"],
+      message: json["message"],
+      createdAt: DateTime.parse(json["createdAt"]),
+      updatedAt: DateTime.parse(json["updatedAt"]),
+    );
+  }
+
+  Future<String?> fetchFileIfNeeded() async {
+    if (isFileDownloaded || fileId == null) return fileUrl;
+    return await FileManager.downloadAndSaveImage(fileId!);
+  }
+
 
   Map<String, dynamic> toJson() => {
         "from": from,

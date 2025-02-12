@@ -6,6 +6,7 @@ import 'package:realtime_chat/injection_container.dart';
 
 import 'package:realtime_chat/shared/models/user.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
+import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/shared/utils/safe_change_notifier.dart';
 
 class ChatService extends SafeChangeNotifier {
@@ -24,8 +25,16 @@ class ChatService extends SafeChangeNotifier {
       final response = await DioClient.instance.get('/messages/$userId');
       final messagesResponse = mensajesResponseFromJson(response.toString());
 
-      messages = List.from(messagesResponse.messages)
-        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      messages = messagesResponse.messages;
+
+      for (var message in messages) {
+        if( message.type == 'image' && message.fileUrl != null ) {
+          final localPath = await FileManager.downloadAndSaveImage(message.fileUrl!);
+          if (localPath != null) {
+            message.fileUrl = localPath;
+          }
+        }
+      }
 
       notifyListeners();
     } catch (e) {

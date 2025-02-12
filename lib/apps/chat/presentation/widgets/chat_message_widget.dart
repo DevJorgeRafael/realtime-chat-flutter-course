@@ -30,31 +30,23 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
 
   Future<void> _loadImage() async {
     if (widget.message.fileUrl == null || widget.message.fileUrl!.isEmpty) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
       return;
     }
 
-    try {
-      final filePath =
-          await FileManager.downloadAndSaveImage(widget.message.fileUrl!);
+    final filePath = widget
+        .message.fileUrl; // Ya debería estar descargada en `_cargarHistorial()`
 
-      if (mounted) {
-        setState(() {
-          _localFilePath = filePath;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('❌ Error cargando imagen: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    if (filePath != null && File(filePath).existsSync()) {
+      setState(() {
+        _localFilePath = filePath;
+        _isLoading = false;
+      });
+    } else {
+      setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +114,16 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
         borderRadius: BorderRadius.circular(12),
         child: Image.file(File(_localFilePath!), fit: BoxFit.cover),
       );
-    } else {
-      return const Icon(Icons.broken_image, color: Colors.red);
     }
+
+    // Si aún no se ha descargado la imagen, intenta de nuevo
+    if (!_isLoading && widget.message.fileUrl == null) {
+      _loadImage();
+    }
+
+    return const Icon(Icons.broken_image, color: Colors.grey);
   }
+
 
   Widget _buildVideoMessage() {
     return ClipRRect(

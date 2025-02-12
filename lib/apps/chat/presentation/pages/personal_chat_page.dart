@@ -85,21 +85,40 @@ class _PersonalChatPageState extends State<PersonalChatPage>
 
   void _cargarHistorial() async {
     await chatService.loadChatHistory(chatService.userReceiver.id);
-    List<Message> chat = chatService.messages;
+    List<Message> chat = chatService.messages.reversed.toList();
+
     if (!mounted) return;
 
     setState(() {
       _messages.clear();
-      for (var message in chat) {
+    });
+
+    for (var message in chat) {
+      if (message.type == "image" &&
+          message.fileId != null &&
+          !message.isFileDownloaded) {
+        String? filePath =
+            await message.fetchFileIfNeeded(); // 👈 Descarga aquí
+        if (filePath != null) {
+          message.fileUrl =
+              filePath; // 👈 Guarda la ruta para evitar descargas repetidas
+        }
+      }
+
+      if (!mounted) return;
+
+      setState(() {
         InsertMessageHelper.insertMessage(
           message: message,
           messages: _messages,
           vsync: this,
           updateMessages: _updateMessages,
         );
-      }
-    });
+      });
+    }
   }
+
+
 
   void _handleSubmit(String texto) {
     if (texto.isEmpty) return;

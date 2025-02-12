@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/shared/service/dio_client.dart';
 
 class FileManager {
@@ -23,39 +24,41 @@ class FileManager {
     return basePath;
   }
 
-  /// Descarga y almacena una imagen en la carpeta local
   static Future<String?> downloadAndSaveImage(String fileId) async {
     try {
       final basePath = await getBaseDirectory();
       final filePath = '$basePath/Images/$fileId.jpg';
 
-      // Si la imagen ya existe, retorna su ruta
-      if (await File(filePath).exists()) {
+      final file = File(filePath);
+      if (await file.exists()) {
         return filePath;
       }
 
-      final imageUrl = '/messages/file/$fileId';
-
-      // Descargar la imagen
       final response = await DioClient.instance.get(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes),
+        '/messages/file/$fileId',
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: {
+            'x-token':
+                await AuthService.getToken(), // Asegura que el token se envía
+          },
+        ),
       );
 
       if (response.statusCode == 200) {
-        final file = File(filePath);
         await file.writeAsBytes(response.data);
-        print('Imagen guardada en: $filePath');
         return filePath;
       } else {
-        print('Error downloading image: ${response.statusCode}');
         return null;
       }
-    } catch(e) {
-      print('Error en downloadAndSaveImage: $e');
+    } catch (e, stacktrace) {
+      print('📝 Stacktrace: $stacktrace');
       return null;
     }
-  } 
+  }
+
+
+
 
   /// Guarda un archivo en la carpeta correspondiente según el tipo.
   static Future<void> saveFile(String filePath, String fileType) async {
