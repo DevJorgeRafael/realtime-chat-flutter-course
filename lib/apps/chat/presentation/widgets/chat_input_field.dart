@@ -96,7 +96,6 @@ class _ChatInputFieldState extends State<ChatInputField> {
     _textController.clear();
     _focusNode.requestFocus();
 
-    // 🔥 Guarda el mensaje en la UI inmediatamente
     widget.onSendMessage(text);
 
     setState(() => _isTyping = false);

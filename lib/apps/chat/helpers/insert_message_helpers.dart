@@ -3,7 +3,6 @@ import 'package:realtime_chat/apps/chat/models/messages_response.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/chat_message_widget.dart';
 
 class InsertMessageHelper {
-  /// **Método general para insertar mensajes con animación**
   static void insertMessage({
     required Message message,
     required List<ChatMessageWidget> messages,
@@ -24,7 +23,6 @@ class InsertMessageHelper {
     updateMessages([...messages]);
   }
 
-  /// **Método para insertar un mensaje de texto**
   static void insertTextMessage({
     required String text,
     required String userId,
@@ -50,7 +48,6 @@ class InsertMessageHelper {
     );
   }
 
-  /// **Método para insertar un mensaje de video**
   static void insertVideoMessage({
     required String videoPath,
     required String userId,
@@ -76,7 +73,6 @@ class InsertMessageHelper {
     );
   }
 
-  /// **Método para insertar un mensaje de imagen**
   static void insertImageMessage({
     required String imagePath,
     required String userId,
@@ -102,7 +98,6 @@ class InsertMessageHelper {
     );
   }
 
-  /// **Método para insertar un mensaje de archivo**
   static void insertFileMessage({
     required String filePath,
     required String fileName,
