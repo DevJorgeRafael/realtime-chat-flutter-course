@@ -83,14 +83,15 @@ class Message {
       fileUrl: json["fileUrl"], // Solo si ya viene del backend
       fileName: json["fileName"],
       message: json["message"],
-      createdAt: DateTime.parse(json["createdAt"]),
-      updatedAt: DateTime.parse(json["updatedAt"]),
+      createdAt: DateTime.parse(json["createdAt"]).toLocal(),
+      updatedAt: DateTime.parse(json["updatedAt"]).toLocal(),
     );
   }
 
   Future<String?> fetchFileIfNeeded() async {
-    if (isFileDownloaded || fileId == null)
+    if (isFileDownloaded || fileId == null) {
       return fileUrl; // Si ya está descargado, usa la ruta local
+    }
 
     String? localPath = await FileManager.downloadAndSaveImage(fileId!);
 

@@ -134,15 +134,6 @@ class _ChatInputFieldState extends State<ChatInputField> {
 
     widget.onSendMessage(text); 
 
-    // Solo enviar los mensajes de texto al backend
-    socketService.emit('mensaje-personal', {
-      'from': authService.user.id,
-      'to': chatService.userReceiver.id,
-      'message': text,
-      'type': 'text',
-      'fileUrl': null,
-    });
-
     setState(() => _isTyping = false);
   }
 

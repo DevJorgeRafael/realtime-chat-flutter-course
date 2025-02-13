@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
 import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
@@ -93,7 +93,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
           !message.isFileDownloaded) {
         String? filePath = await message.fetchFileIfNeeded();
         if (filePath != null) {
-          message.fileUrl = filePath; // ✅ Guarda la ruta local correctamente
+          message.fileUrl = filePath; 
         }
       }
 
@@ -135,15 +135,24 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   }
 
   void _escucharMensaje(dynamic payload) {
-    final receivedMessage = Message.fromJson(payload);
+    try {
+      print(
+          "📩 Mensaje recibido del socket: ${jsonEncode(payload)}"); // 🔍 Depuración completa
 
-    InsertMessageHelper.insertMessage(
-      message: receivedMessage,
-      messages: _messages,
-      vsync: this,
-      updateMessages: _updateMessages,
-    );
+      final receivedMessage = Message.fromJson(payload);
+
+      InsertMessageHelper.insertMessage(
+        message: receivedMessage,
+        messages: _messages,
+        vsync: this,
+        updateMessages: _updateMessages,
+      );
+    } catch (e, stacktrace) {
+      print("❌ Error al procesar el mensaje: $e");
+      print("📝 Stacktrace: $stacktrace"); // 📌 Muestra dónde exactamente falló
+    }
   }
+
 
   @override
   void dispose() {

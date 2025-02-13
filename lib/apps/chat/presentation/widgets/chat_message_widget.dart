@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:realtime_chat/apps/chat/models/messages_response.dart';
 import 'package:realtime_chat/shared/service/file_manager.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/video_player_widget.dart';
+import 'package:realtime_chat/shared/utils/abrir_enlace_util.dart';
 
 class ChatMessageWidget extends StatefulWidget {
   final Message message;
@@ -33,7 +35,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
       return;
     }
 
-    final filePath = widget.message.fileUrl; 
+    final filePath = widget.message.fileUrl;
 
     if (filePath != null && File(filePath).existsSync()) {
       setState(() {
@@ -44,10 +46,10 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     bool isMine = widget.message.isMine;
+    String time = DateFormat('HH:mm').format(widget.message.createdAt);
 
     return FadeTransition(
       opacity: widget.animationController,
@@ -59,17 +61,39 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
         child: Align(
           alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             margin: EdgeInsets.only(
               bottom: 5,
               left: isMine ? 50 : 5,
               right: isMine ? 5 : 50,
             ),
             decoration: BoxDecoration(
-              color: isMine ? Colors.red.shade400 : const Color(0xffE4E5E8),
-              borderRadius: BorderRadius.circular(20),
+              color: isMine ? Colors.red.shade400 : Colors.grey,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(20),
+                topRight: const Radius.circular(20),
+                bottomLeft: isMine
+                    ? const Radius.circular(20)
+                    : const Radius.circular(0),
+                bottomRight: isMine
+                    ? const Radius.circular(0)
+                    : const Radius.circular(20),
+              ),
             ),
-            child: _buildMessageContent(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildMessageContent(),
+                const SizedBox(height: 3),
+                Text(
+                  time,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isMine ? Colors.white70 : const Color.fromARGB(235, 236, 236, 236),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -77,12 +101,28 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
   }
 
   Widget _buildMessageContent() {
-    switch (widget.message.type) {
-      case "text":
-        return Text(
+    if (widget.message.type == "text") {
+      bool isLink = widget.message.message != null &&
+          widget.message.message!.startsWith("http");
+
+      return GestureDetector(
+        onTap: isLink
+            ? () => abrirEnlaceUtil(context, widget.message.message!)
+            : null,
+        child: Text(
           widget.message.message ?? "",
-          style: const TextStyle(fontSize: 16, color: Colors.white),
-        );
+          style: TextStyle(
+            fontSize: 16,
+            color: isLink ? Colors.blue[200] : Colors.white,
+            decoration: isLink ? TextDecoration.underline : TextDecoration.none, 
+            decorationColor: Colors.blue[200],
+            decorationThickness: 1.5
+          ),
+        ),
+      );
+    }
+
+    switch (widget.message.type) {
       case "image":
         return _buildImageMessage();
       case "video":
@@ -94,6 +134,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
             style: TextStyle(color: Colors.white));
     }
   }
+
 
   Widget _buildImageMessage() {
     if (_isLoading) {
@@ -120,10 +161,8 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
       );
     }
 
-    return const Icon(Icons.broken_image,
-        color: Colors.grey);
+    return const Icon(Icons.broken_image, color: Colors.grey);
   }
-
 
   Widget _buildVideoMessage() {
     return ClipRRect(
@@ -135,9 +174,8 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
   Widget _buildFileMessage() {
     return GestureDetector(
       onTap: () async {
-        final filePath = widget.message.fileUrl; 
+        final filePath = widget.message.fileUrl;
         if (filePath != null && filePath.isNotEmpty) {
-
           if (await File(filePath).exists()) {
             await FileManager.openFile(filePath);
           } else {
