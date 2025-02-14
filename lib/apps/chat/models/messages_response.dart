@@ -96,7 +96,7 @@ class Message {
     String? localPath = await FileManager.downloadAndSaveImage(fileId!);
 
     if (localPath != null) {
-      fileUrl = localPath; // ✅ Guarda la ruta local correctamente
+      fileUrl = localPath; // Guarda la ruta local correctamente
       return localPath;
     }
 
