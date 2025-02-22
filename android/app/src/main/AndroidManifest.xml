@@ -4,9 +4,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:label="Real Time Chat"
@@ -34,6 +36,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <service android:name="org.webrtc.NetworkMonitorAutoDetect"
+        android:exported="true">
+        
+        <intent-filter>
+            <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+        </intent-filter>
+    </service>
+
     </application>
     <queries>
         <intent>
@@ -51,5 +61,10 @@
             <data android:scheme="https" />
         </intent>
     </queries>
+
+    <uses-feature android:name="android.hardware.microphone" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+
 
 </manifest>

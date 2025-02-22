@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:realtime_chat/apps/auth/domain/auth_service.dart';
+import 'package:realtime_chat/apps/chat/domain/call_service.dart';
 import 'package:realtime_chat/apps/chat/domain/chat_service.dart';
 import 'package:realtime_chat/apps/chat/domain/socket_service.dart';
 import 'package:realtime_chat/apps/chat/helpers/insert_message_helpers.dart';
 import 'package:realtime_chat/apps/chat/models/messages_response.dart';
+import 'package:realtime_chat/apps/chat/presentation/pages/incoming_call_page.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/chat_input_field.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/chat_message_widget.dart';
 import 'package:realtime_chat/apps/chat/presentation/widgets/personal_chat_appbar.dart';
@@ -26,6 +28,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
   late ChatService chatService;
   late SocketService socketService;
   late AuthService authService;
+  late CallService callService;
 
   @override
   void initState() {
@@ -33,8 +36,28 @@ class _PersonalChatPageState extends State<PersonalChatPage>
     chatService = sl<ChatService>();
     socketService = sl<SocketService>();
     authService = sl<AuthService>();
+    callService = CallService();
 
     socketService.socket.on('mensaje-personal', _escucharMensaje);
+    callService.handleIncomingCallEvents();
+
+  // Manejo de llamadas entrantes
+  callService.onIncomingCall = (callerId, offer) {
+      // ✅ Ahora sí funciona correctamente
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IncomingCallPage(
+            callerId: callerId,
+            callService: callService,
+            offer: offer, // ✅ Ahora sí se pasa correctamente la oferta SDP
+          ),
+        ),
+      );
+    };
+
+
+
     _cargarHistorial();
   }
 
@@ -136,8 +159,7 @@ class _PersonalChatPageState extends State<PersonalChatPage>
 
   void _escucharMensaje(dynamic payload) {
     try {
-      print(
-          "📩 Mensaje recibido del socket: ${jsonEncode(payload)}"); // 🔍 Depuración completa
+      print("📩 Mensaje recibido del socket: ${jsonEncode(payload)}"); // 🔍 Depuración completa
 
       final receivedMessage = Message.fromJson(payload);
 

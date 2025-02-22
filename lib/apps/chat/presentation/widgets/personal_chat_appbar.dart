@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:realtime_chat/apps/chat/domain/call_service.dart';
 import 'package:realtime_chat/shared/models/user.dart';
 
-class PersonalChatAppbar extends StatelessWidget
-    implements PreferredSizeWidget {
+class PersonalChatAppbar extends StatelessWidget implements PreferredSizeWidget {
   final User user;
 
   const PersonalChatAppbar({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    final callService = CallService();
+    final userReceiver = user;
+
     return AppBar(
       backgroundColor: Colors.red,
       iconTheme: const IconThemeData(color: Colors.white),
@@ -60,6 +63,12 @@ class PersonalChatAppbar extends StatelessWidget
       ),
       actions: [
         IconButton(
+          icon: const Icon(Icons.call, color: Colors.white),
+          onPressed: () {
+            callService.startCall(userReceiver.id);
+          },
+        ),
+        IconButton(
           icon: const Icon(Icons.search, color: Colors.white),
           onPressed: () {
             // 🚀 Aquí puedes abrir la funcionalidad de búsqueda en el chat
@@ -71,13 +80,10 @@ class PersonalChatAppbar extends StatelessWidget
           onSelected: (value) {
             switch (value) {
               case 'info':
-                print("Ver información del contacto");
                 break;
               case 'mute':
-                print("Silenciar chat");
                 break;
               case 'clear':
-                print("Limpiar historial de mensajes");
                 break;
             }
           },
